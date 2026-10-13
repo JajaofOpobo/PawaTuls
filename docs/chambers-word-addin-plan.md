@@ -2174,3 +2174,171 @@ conflict (newer decision wins).
 - **Phase 28:** apply panel deltas (Appendix G).
 - **Phase 29:** add the Appendix G fixture matrix, integrity checks, and honesty
   rules to the test pass. Do not weaken failing tests to green.
+
+---
+
+## APPENDIX I: KUTOOLS PARITY — REMOVAL, NOTES, CAPTIONS, SELECT, TABLES (PHASES 35–40)
+
+Rule: every KuTools document feature is covered, matched, or explicitly reasoned
+about in `docs/KUTOOLS_COVERAGE.md`. The phases below close the remaining gaps.
+All follow the global rules (counts returned, confirms in UI, table guards, no
+selection churn, `tsc` clean) and Appendix D R1–R7.
+
+### PHASE 33 AMENDMENT (better native-list signal — replaces OOXML `numPr` rule)
+
+Classify via `paragraph.listItemOrNullObject` (verified API): null-object →
+not native; otherwise `kind: "native"`, `level: listItem.level`. Keep the OOXML
+`<w:numPr>` check only as a Phase 29 cross-validation, not the primary signal.
+
+### PHASE 35: REMOVAL MODULE
+
+**Prerequisites:** Phases 7, 8 complete
+**Resume Prompt:** `Create src/formatting/removal.ts. Follow Phase 35 of the plan exactly.`
+
+Create `src/formatting/removal.ts`. Every function takes
+`applyTo: "selection" | "document" = "document"`, resolves the paragraph set
+(selection paragraphs or body paragraphs), and returns
+`{ data?: number; error?: string }` (items removed/changed). Structural
+whole-document ops confirm in UI (Phase 36), not here. Verified APIs:
+`body.tables/inlinePictures/comments`, `TableRow.delete`, `TableCell.deleteColumn`,
+`ContentControl.delete`, `document.deleteBookmark`, `Hyperlink.delete`,
+`parentTableOrNullObject`, per-paragraph `getOoxml`/`insertOoxml`.
+
+- `removePageBreaks` / `removeColumnBreaks`: strip `<w:br w:type="page|column"/>`
+  from each paragraph's OOXML (batched: queue all, one sync, rewrite changed).
+- `removeSectionBreaks`: strip `<w:sectPr>…</w:sectPr>` from `w:pPr` (merges into
+  previous section — panel confirms per R2).
+- `removeAllBreaks`: calls the three above in one `Word.run`; returns total.
+- `removeHiddenText`: strip `<w:r>` runs containing `<w:vanish/>` from OOXML.
+- `removeComments`: `body.comments` reverse `delete()`.
+- `removeDropCap`: strip `<w:dropCap…/>` from `w:pPr`.
+- `removeFrames`: strip `<w:framePr…/>` from `w:pPr`.
+- `removePictures`: strip `<w:drawing>` elements containing `<pic:pic/>`
+  (covers inline and floating pictures).
+- `removeTextBoxes`: strip runs containing `<w:txbxContent/>`.
+- `removeTables`: reverse `table.getRange().delete()` (verify at build; fallback
+  delete all rows).
+- `removeEmptyTableRows`: per table, reverse-delete rows whose cells are all
+  whitespace (via `row.values`).
+- `removeEmptyTableColumns`: per table, delete columns whose cells are all
+  whitespace (via first-cell `deleteColumn()`), reverse column order.
+- `removeContentControls(keepText = true)`: `getContentControls()` reverse
+  `delete(keepText)` (verify signature at build).
+- `removeBookmarks`: names from body-range `getBookmarks()`, `deleteBookmark`
+  each (reverse order).
+- `removeHyperlinks`: per paragraph `getHyperlinkRanges()` → `hyperlink.delete()`
+  (verify display text is kept; else replace range with `textToDisplay`).
+- `tabToSpace`: paragraph text `/\t/g → " "`, write back changed only.
+- `removeEmptyLines`: paragraph text `/\v{2,}/g → "\v"`, write back changed only.
+
+### Completion Test
+
+- [ ] `src/formatting/removal.ts` exists, `npx tsc --noEmit` passes
+- [ ] Rerun on a cleaned document reports 0 for every function (R3)
+- [ ] Tables/cells are never corrupted (row/col deletes only via table APIs)
+
+### PHASE 36: REMOVE SECTION IN FORMATTING PANEL
+
+**Prerequisites:** Phases 16, 35 complete
+**Resume Prompt:** `Add the Remove accordion section to FormattingPanel.tsx. Follow Phase 36 of the plan exactly.`
+
+Sixth Accordion section **Remove**, grouped buttons (Breaks / Hidden & Marks /
+Tables & Objects / References), each surfacing counts; section-break and
+remove-tables buttons confirm first (R2). No Office.js calls. `tsc` passes.
+
+### PHASE 37: NOTE MANAGEMENT MODULE + FOOTNOTE PANEL SECTION
+
+**Prerequisites:** Phases 7, 8, 28 complete
+**Resume Prompt:** `Create src/footnotes/notes.ts and extend FootnotePanel.tsx. Follow Phase 37 of the plan exactly.`
+
+Create `src/footnotes/notes.ts` (verified APIs: `body.footnotes`/`endnotes`
+`NoteItemCollection`, `NoteItem.delete`). Descending-order deletes; counts returned.
+
+- `removeFootnotes(applyTo)` / `removeEndnotes(applyTo)`: reverse-delete the
+  collection (selection scope = notes whose reference is inside the selection
+  range — verify `NoteItem.reference` at build; else document-scope only with
+  panel note).
+- `convertFootnoteToEndnote()`: KuTools parity — transcribe note text to new
+  endnotes then backward-delete (verify richer `FormattedText`-style transfer
+  at build; plain-text transfer is acceptable parity with a documented limit).
+- `convertEndnoteToText()`: transcribe numbered text to document end (forward),
+  backward-delete references/markers (KuTools parity, upright markers).
+
+Extend `FootnotePanel.tsx` with a **Manage Notes** section: four buttons with
+counts + confirms; conversion buttons note the plain-text limitation. `tsc` passes.
+
+### Completion Test
+
+- [ ] `src/footnotes/notes.ts` exists (4 fns), panel extended, `tsc` passes
+- [ ] Remove twice → second run 0 (R3); conversions verified by recount
+
+### PHASE 38: CAPTIONS MODULE + PANEL BUTTONS
+
+**Prerequisites:** Phases 7, 8, 16 complete
+**Resume Prompt:** `Create src/formatting/captions.ts and extend FormattingPanel.tsx. Follow Phase 38 of the plan exactly.`
+
+Create `src/formatting/captions.ts`:
+
+- `insertCaption(kind: "table" | "figure" | "equation", label?: string): Promise<{ error?: string }>`
+  Inserts `<label> <SEQ field>` at the cursor via `insertOoxml` (label defaults
+  `Table`/`Figure`/`Equation`); numbering is automatic through the SEQ field.
+  Verify SEQ-field insertion XML against the installed Word build; update all
+  fields after insert so the number renders.
+- `refreshCaptions(): Promise<{ data?: number; error?: string }>`
+  Updates every SEQ field (`fields.getByTypes` sequence type — verify enum at
+  build, else update all fields) and returns the count.
+
+Extend the FormattingPanel **Styles and Tools** section: kind dropdown, label
+input, Insert button, Refresh button with count. `tsc` passes.
+
+### PHASE 39: SELECT MODULE + PANEL SECTION
+
+**Prerequisites:** Phases 7, 8, 16 complete
+**Resume Prompt:** `Create src/formatting/select.ts and extend FormattingPanel.tsx. Follow Phase 39 of the plan exactly.`
+
+Office.js has a single selection — no multi-select. Contract for every function:
+`{ data?: { total: number }; error?: string }`: selects the FIRST match with
+`range.select()` and reports how many match (user repeats to step through).
+
+Create `src/formatting/select.ts` (all take no scope — whole document):
+`selectTables`, `selectEmptyParagraphs` (same guards as removal),
+`selectHeadings` (style name starts with `"Heading"`), `selectShortParagraphs`
+(`maxChars = 25` default, KuTools `ShortParaMaxChars` parity), `selectPictures`
+(first `inlinePictures` range). New FormattingPanel section **Select** with five
+buttons showing match counts. `tsc` passes.
+
+### PHASE 40: TABLES, PICTURES, WIDOW CONTROL + PANEL SECTION
+
+**Prerequisites:** Phases 7, 8, 16 complete
+**Resume Prompt:** `Create src/formatting/tables.ts, extend paragraph.ts, extend FormattingPanel.tsx. Follow Phase 40 of the plan exactly.`
+
+Create `src/formatting/tables.ts`:
+
+- `convertTableToText(separator = " "): Promise<{ data?: number; error?: string }>`
+  Applies to selected tables (resolve via selection paragraphs'
+  `parentTableOrNullObject`, deduplicated): `row.convertToText(separator)` per
+  row, reverse order. Returns tables converted. (KuTools `ConvertTableToText`
+  separator parity, including its `"-"` default language — default `" "` here.)
+- `repeatHeaderRows(enable = true): Promise<{ error?: string }>`
+  Sets `table.headerRowCount = enable ? 1 : 0` on selected tables.
+- `insertTableDiagonalHeader(type: "down" | "up"): Promise<{ error?: string }>`
+  Adds a diagonal border to the first cell of the first row of selected tables
+  via OOXML (`w:tcBorders` diagonal element — verify tag against the installed
+  build); error if the selection holds no table.
+- `resizeImages(percent: number): Promise<{ data?: number; error?: string }>`
+  Scales every inline picture's width/height by `percent/100` (validate 10–400,
+  honor `lockAspectRatio`); returns count.
+- Extend `src/formatting/paragraph.ts` with `controlWidows(applyTo)`:
+  sets `widowControl = true` via OOXML `w:widowControl` (Paragraph exposes no
+  direct prop) — the safe, supported replacement for KuTools' font-shrink
+  `AdjustParagraphEnd` heuristic (rejected, AUDIT.md #10).
+
+New FormattingPanel section **Tables & Pictures**: separator input + Convert,
+Repeat-headers toggle, Diagonal buttons, percent SpinButton + Resize, Widow
+control button. `tsc` passes.
+
+### Completion Test (Phases 35–40)
+
+- [ ] All modules exist, `npx tsc --noEmit` passes
+- [ ] Every removal/conversion rerun reports 0 (R3)
+- [ ] Counts surface in UI; structural ops confirm first (R2)
