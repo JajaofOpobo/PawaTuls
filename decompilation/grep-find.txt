@@ -1,0 +1,36 @@
+# grep-find.txt — 2026-10-13 — Find/Replace refs
+
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--.cs:139: internal delegate Replacement _0001_0004(object P_0);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--.cs:148: internal delegate void _000F_0004(object P_0, WdFindWrap P_1);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3540: object obj = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3566: object obj3 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3611: object obj = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3638: object obj3 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3683: object obj = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3710: object obj3 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:4393: object obj = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:4417: _000F_0004._007E_0083_0014(_0082._007E_0081_000E(global::_001F._007E_001A_000E(KutoolsAddIn.KutoolsApplication)), WdFindWrap.wdFindContinue);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:4418: object obj2 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:4929: object obj4 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:4969: object obj8 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5009: object obj12 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5051: object obj16 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5109: object obj20 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5151: object obj24 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5193: object obj28 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5237: object obj32 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5296: _000F_0004._007E_0083_0014(_0082._007E_0080_000E(range), WdFindWrap.wdFindContinue);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5361: _000F_0004._007E_0083_0014(_0082._007E_0080_000E(range), WdFindWrap.wdFindContinue);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5552: object obj = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5584: _000F_0004._007E_0083_0014(_0082._007E_0080_000E(range), WdFindWrap.wdFindContinue);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5614: object obj2 = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5756: _000F_0004._007E_0083_0014(_0082._007E_0080_000E(range2), WdFindWrap.wdFindContinue);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:5815: _000F_0004._007E_0083_0014(_0082._007E_0080_000E(range2), WdFindWrap.wdFindContinue);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:6173: object obj = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:6212: _000F_0004._007E_0083_0014(_0082._007E_0080_000E(range), WdFindWrap.wdFindContinue);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:6213: object obj = WdReplace.wdReplaceAll;
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:6441: _000F_0004._007E_0083_0014(_0082._007E_0080_000E(_0001_0006), WdFindWrap.wdFindStop);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:6500: _000F_0004._007E_0083_0014(find, WdFindWrap.wdFindStop);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:6562: _000F_0004._007E_0083_0014(_0082._007E_0080_000E(_0001_0006), WdFindWrap.wdFindStop);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\FormDocumentSplit.cs:79: _000F_0004._007E_0083_0014(_0082._007E_0080_000E(range), WdFindWrap.wdFindStop);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\FormDocumentSplit.cs:158: _000F_0004._007E_0083_0014(_0082._007E_0080_000E(range), WdFindWrap.wdFindStop);

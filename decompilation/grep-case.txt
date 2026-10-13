@@ -1,0 +1,3 @@
+# grep-case.txt — 2026-10-13 — Case-conversion refs — EMPTY: feature absent from KuTools (no ChangeCase/ToUpper/ToLower/ToTitleCase usage)
+
+

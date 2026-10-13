@@ -4,4 +4,3 @@ dist/
 .DS_Store
 Thumbs.db
 decompilation/kutools-source/
-decompilation/grep-*.txt

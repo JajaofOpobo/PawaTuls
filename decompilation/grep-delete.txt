@@ -1,0 +1,3 @@
+# grep-delete.txt — 2026-10-13 — Delete/Clear refs — EMPTY: no literal .Delete()/Clear*AllFormatting in source; deletions go through House-of-Cards proxies (see Connect.cs:3423 etc. in FINDINGS.md)
+
+

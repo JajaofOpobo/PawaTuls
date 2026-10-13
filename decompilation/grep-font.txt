@@ -1,0 +1,23 @@
+# grep-font.txt — 2026-10-13 — Font/color/mixed-selection refs in decompiled source (proxied external calls appear as _XXXX delegates; see FINDINGS.md)
+
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--.cs:75: internal delegate void _009A_0002(object P_0, WdUnderline P_1);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--.cs:76: internal delegate void _009B_0002(object P_0, WdColor P_1);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--.cs:377: internal delegate WdColor _0007_0008(object P_0);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:3852: public static int _001E_0087(WdColor _001F_0087)
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:3854: WdColor wdColor = ((_001F_0087 != WdColor.wdColorAutomatic) ? ((_001F_0087 >= WdColor.wdColorAutomatic || (_001F_0087 & WdColor.wdColorWhite) != WdColor.wdColorYellow) ? _001F_0087 : WdColor.wdColorBlack) : WdColor.wdColorBlack);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:3855: return (int)(wdColor & WdColor.wdColorWhite);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:692: global::_0015._007E_0004_0007(_0080_0002._007E_0088_0011(listLevel), 9999999);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:693: global::_0015._007E_0005_0007(_0080_0002._007E_0088_0011(listLevel), 9999999);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:697: global::_0015._007E_000E_0007(_0080_0002._007E_0088_0011(listLevel), 9999999);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:698: global::_0015._007E_000F_0007(_0080_0002._007E_0088_0011(listLevel), 9999999);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:699: global::_0015._007E_0010_0007(_0080_0002._007E_0088_0011(listLevel), 9999999);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:700: global::_0015._007E_0011_0007(_0080_0002._007E_0088_0011(listLevel), 9999999);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:701: global::_0015._007E_0012_0007(_0080_0002._007E_0088_0011(listLevel), 9999999);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:702: global::_0015._007E_0013_0007(_0080_0002._007E_0088_0011(listLevel), 9999999);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:703: global::_009A_0002._007E_0086_0012(_0080_0002._007E_0088_0011(listLevel), WdUnderline.wdUnderlineNone);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:704: global::_009B_0002._007E_0087_0012(_0080_0002._007E_0088_0011(listLevel), WdColor.wdColorGray40);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:711: global::_0015._007E_0015_0007(_0080_0002._007E_0088_0011(listLevel), 9999999);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:712: global::_0015._007E_0016_0007(_0080_0002._007E_0088_0011(listLevel), 9999999);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\UCAutoTextPane.cs:346: _0003.Font = new System.Drawing.Font(_0003.Font.FontFamily, Settings.Default.AutoTextPaneFontSize);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\UCBookmark.cs:196: _0006.Font = new System.Drawing.Font(_0006.Font.FontFamily, Settings.Default.BookmarkPaneFontSize);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\UCCaptionPane.cs:65: _0005.Font = new System.Drawing.Font(_0005.Font.FontFamily, Settings.Default.CaptionPaneFontSize);

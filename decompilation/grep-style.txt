@@ -1,0 +1,4 @@
+# grep-style.txt — 2026-10-13 — Style refs
+
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--.cs:366: internal delegate WdStyleType _009B_0007(object P_0);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:95: if (_009B_0007._007E_0008_0019(style) == WdStyleType.wdStyleTypeParagraph)

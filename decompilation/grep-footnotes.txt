@@ -1,0 +1,27 @@
+# grep-footnotes.txt — 2026-10-13 — Footnote/Endnote refs
+
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--.cs:88: internal delegate Footnotes _0008_0003(object P_0);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--.cs:89: internal delegate Footnote _000E_0003(object P_0, int P_1);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--.cs:90: internal delegate Endnotes _000F_0003(object P_0);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--.cs:91: internal delegate Endnote _0010_0003(object P_0, int P_1);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--.cs:136: internal delegate Endnote _009D_0003(object P_0, Range P_1, ref object P_2, ref object P_3);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:791: internal static string btnEndnoteToText => _007F_0008._007E_008F_0019(ResourceManager, _001D(5577), _0002);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:793: internal static string btnEndnoteToText_Supertip => _007F_0008._007E_008F_0019(ResourceManager, _001D(31493), _0002);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:843: internal static string btnFootnodtToEndnote => _007F_0008._007E_008F_0019(ResourceManager, _001D(5548), _0002);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:1079: internal static string btnRemoveEndnotes => _007F_0008._007E_008F_0019(ResourceManager, _001D(6570), _0002);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:1081: internal static string btnRemoveEndnotes_Q => _007F_0008._007E_008F_0019(ResourceManager, _001D(7370), _0002);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:1083: internal static string btnRemoveEndnotes_Supertip => _007F_0008._007E_008F_0019(ResourceManager, _001D(34245), _0002);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:1085: internal static string btnRemoveFootnotes => _007F_0008._007E_008F_0019(ResourceManager, _001D(6545), _0002);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:1087: internal static string btnRemoveFootnotes_Q => _007F_0008._007E_008F_0019(ResourceManager, _001D(7336), _0002);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:1089: internal static string btnRemoveFootnotes_Supertip => _007F_0008._007E_008F_0019(ResourceManager, _001D(34282), _0002);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:1405: internal static string checkBoxEndnote => _007F_0008._007E_008F_0019(ResourceManager, _001D(36662), _0002);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:1413: internal static string checkBoxFootnote => _007F_0008._007E_008F_0019(ResourceManager, _001D(36683), _0002);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:3138: internal static Bitmap Endnote
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\--\--.cs:3165: internal static Bitmap Footnote
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3411: Footnote footnote = global::_000E_0003._007E_0097_0012(global::_0008_0003._007E_0096_0012(global::_0016._007E_009B_0007(KutoolsAddIn.KutoolsApplication)), i);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3413: global::_0015._007E_0017_0007(range, global::_0003._007E_0098(global::_000F._007E_0015_0005(footnote)));
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3414: global::_0015._007E_0018_0007(range, global::_0003._007E_0097(global::_000F._007E_0015_0005(footnote)));
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3417: Endnote endnote = _009D_0003._007E_0014_0014(global::_000F_0003._007E_0098_0012(global::_0016._007E_009B_0007(KutoolsAddIn.KutoolsApplication)), range, ref value, ref value2);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3418: _0092._007E_0017_000F(global::_000F._007E_000F_0005(endnote), global::_0010._007E_001B_0005(global::_000F._007E_000E_0005(footnote)));
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3422: Footnote footnote = global::_000E_0003._007E_0097_0012(global::_0008_0003._007E_0096_0012(global::_0016._007E_009B_0007(KutoolsAddIn.KutoolsApplication)), i);
+C:\Users\Jaja\AndroidStudioProjects\PawaTuls\decompilation\kutools-source\Kutools\Connect.cs:3423: global::_0006._007E_0014_0003(footnote);
