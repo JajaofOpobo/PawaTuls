@@ -21,7 +21,7 @@ import {
   safeWordRun,
 } from "../shared/wordUtils";
 
-function mapAlignment(
+export function mapAlignment(
   alignment: NonNullable<ParagraphOptions["alignment"]>
 ): Word.Alignment {
   switch (alignment) {
@@ -36,7 +36,7 @@ function mapAlignment(
   }
 }
 
-function mapLineSpacing(rule: LineSpacingRule, value?: number): number {
+export function mapLineSpacing(rule: LineSpacingRule, value?: number): number {
   switch (rule) {
     case "single":
       return 12;

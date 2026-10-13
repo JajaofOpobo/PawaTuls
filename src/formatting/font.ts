@@ -7,7 +7,7 @@
 import { FontOptions, UnderlineStyle } from "../shared/types";
 import { getSelectionOrThrow, safeWordRun } from "../shared/wordUtils";
 
-function mapUnderline(style: UnderlineStyle): Word.UnderlineType {
+export function mapUnderline(style: UnderlineStyle): Word.UnderlineType {
   switch (style) {
     case "none":
       return Word.UnderlineType.none;
