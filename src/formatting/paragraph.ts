@@ -177,10 +177,19 @@ export async function removeEmptyParagraphs(): Promise<{ data?: number; error?: 
     const paragraphs = body.paragraphs;
     paragraphs.load("text");
     await context.sync();
+    // Audit lesson (KuTools ^p-in-tables corruption): never delete paragraph marks
+    // that terminate table cells — check table membership before deleting.
+    const empties = paragraphs.items.filter((para) => para.text.trim() === "");
+    const tableChecks = empties.map((para) => {
+      const t = para.parentTableOrNullObject;
+      context.load(t);
+      return t;
+    });
+    await context.sync();
     let deleted = 0;
-    for (const para of paragraphs.items.slice().reverse()) {
-      if (para.text.trim() === "") {
-        para.delete();
+    for (let i = empties.length - 1; i >= 0; i--) {
+      if (tableChecks[i].isNullObject) {
+        empties[i].delete();
         deleted++;
       }
     }

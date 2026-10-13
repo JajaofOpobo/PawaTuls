@@ -42,9 +42,19 @@ export async function removeHorizontalLines(): Promise<{ data?: number; error?: 
     await context.sync();
     const candidates = paragraphs.items.slice().reverse();
     const ooxmlResults = candidates.map((para) => para.getOoxml());
+    const tableChecks = candidates.map((para) => {
+      const t = para.parentTableOrNullObject;
+      context.load(t);
+      return t;
+    });
     await context.sync();
     let deleted = 0;
     for (let i = 0; i < candidates.length; i++) {
+      // Audit lesson: cell borders are normal table formatting — never delete
+      // in-table paragraphs for having borders.
+      if (!tableChecks[i].isNullObject) {
+        continue;
+      }
       const para = candidates[i];
       if (/^[-_=]{3,}$/.test(para.text.trim())) {
         para.delete();
