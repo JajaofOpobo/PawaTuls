@@ -52,7 +52,7 @@ npm run build    # production build → dist/
 - [x] Phase 8 — wordUtils
 - [x] Phase 9 — task pane shell + stubs
 - [ ] Live Word check — run `npm start`, confirm 3 tabs (manual, Phase 4/9 completion test)
-- [ ] Phases 1–3, 6 — KuTools decompilation (`wordkutools_v8.2.exe` in repo root is the source binary)
+- [ ] Phases 1–3, 6 — KuTools decompilation → `decompilation/api-map.md` + `integration-notes.md` (unblocks Phases 10/11/13/15)
 - [ ] Phases 10–30 — feature modules, panels, testing, packaging
 
 Note: `tsconfig.json` intentionally has no `noEmit` (webpack `ts-loader` needs emit;
