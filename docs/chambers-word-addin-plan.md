@@ -16,6 +16,9 @@
 5. After every phase, manually run `npm start` and test in Word before marking the phase complete.
 6. Tick every item in the **Completion Test** before advancing.
 7. Phases are sequential. Do not skip.
+8. Appendices D–H (merged from the v1 plan) are normative: new Phases 31–34 build
+   new features, and Appendix H amends several unbuilt phases — the agent running
+   an amended phase must read Appendix H first.
 
 ---
 
@@ -1883,3 +1886,291 @@ Deleting a paragraph shifts all subsequent paragraph indices. Process in descend
 
 **5. Document edited between scan and convert.**  
 The converter does not use stored `Word.Range` objects from the scan session. It re-scans at conversion time. If the user edits the document after scanning, the re-scan finds the current state. This avoids stale reference errors at the cost of a brief re-scan delay on Convert.
+
+---
+
+## APPENDIX D: CROSS-CUTTING PRODUCT RULES (V1 MERGE)
+
+These override silence in earlier phases. They do not change any built module's
+contract; they constrain unbuilt work (Phases 16–28, 31–34).
+
+**R1 — Formatting and cleanup stay separate.** Applying a font/paragraph/style
+profile must never silently remove blank paragraphs, line breaks, tabs, or
+structural content. Cleanup runs only when the user invokes a cleanup command.
+
+**R2 — Preview before destructive scope.** Every whole-document or destructive
+panel action shows what it will do first (counts of affected paragraphs/matches)
+and applies only on explicit user confirmation. Modules return counts; panels
+display them.
+
+**R3 — Idempotence.** Normalizing operations must be safe to run twice: the
+second run changes nothing and reports zero. Test this for every cleanup,
+conversion, and numbering function.
+
+**R4 — Exclusions: skip and report where safety is unprovable.** Never delete or
+rewrite a paragraph the API cannot prove safe. Minimum exclusion set for
+deletion-class ops: table-cell paragraphs (done — `parentTableOrNullObject`),
+paragraphs carrying bookmarks/fields/section breaks, tracked-change revisions.
+When an item is skipped, count it as skipped, not silent.
+
+**R5 — No document-text logging.** Diagnostics record operation IDs, counts,
+locations (paragraph indices), and error categories. Never log paragraph text,
+footnote content, or names/parties to console, files, or telemetry.
+
+**R6 — General-purpose engine; legal content is data, not defaults.** No Nigerian
+legal rule, court name, or citation format may appear as a default inside the
+formatting engine or shared helpers. Legal workflows live in `src/legal/` and the
+Legal panel only.
+
+**R7 — No silent destructive modification.** Every destructive command has
+preconditions (checked), a change plan (counts/preview), and postconditions
+(verified). Stop safely when a range cannot be re-resolved or verification fails.
+Never claim rollback; report partial state honestly.
+
+---
+
+## APPENDIX E: FORMATTING PROFILES (NEW FEATURE — PHASES 31–32)
+
+Motivation (v1 §2.2): users apply recurring property sets to different document
+types; legal filings are demanding instances, not the only instance. A profile
+bundles font + paragraph + style selections under a versioned, portable schema.
+
+### Shared profile types (added to `src/shared/types.ts` in the Phase 31 session)
+
+```typescript
+export interface FormattingProfile {
+  schemaVersion: 1;
+  id: string;            // stable, unique, e.g. "court-body-1"
+  name: string;          // display name
+  description?: string;
+  style?: string;        // named style applied first (must exist)
+  font?: FontOptions;
+  paragraph?: ParagraphOptions;
+}
+```
+
+### PHASE 31: PROFILE STORE AND APPLY
+
+**Prerequisites:** Phases 10, 11, 12 complete
+**Resume Prompt:** `Create src/formatting/profiles.ts. Follow Phase 31 of the plan exactly.`
+
+Create `src/formatting/profiles.ts`. Implement these exported functions
+(reuse `applyFont`, `applyParagraphFormat`, `applyStyle` — no duplicated logic):
+
+**`validateProfile(input: unknown): { data?: FormattingProfile; error?: string }`**
+Pure. Rejects non-objects, missing/empty `id`/`name`, `schemaVersion !== 1`,
+wrong-typed `style`, and any unknown top-level field (list it in the error).
+Missing `font`/`paragraph`/`style`/`description` are legal (a profile changes
+only what it targets — R1).
+
+**`applyProfile(profile: FormattingProfile, applyTo: "selection" | "document"): Promise<{ data?: number; error?: string }>`**
+Validates first (returns error without touching the document on failure).
+Order: `applyStyle(profile.style)` if present, then font, then paragraph.
+Scope `"document"` operates on body paragraphs directly without moving the
+user's cursor (audit lesson: never move selection). Returns paragraphs affected.
+
+**`exportProfile(profile: FormattingProfile): string`**
+Pure. `JSON.stringify(profile, null, 2)` after validation.
+
+**`importProfile(json: string): { data?: FormattingProfile; error?: string }`**
+Pure. `JSON.parse` in try/catch (parse failure → error, never throw), then
+`validateProfile`. Never execute imported content as code.
+
+**Builtins** (exported `const BUILTIN_PROFILES: FormattingProfile[]`):
+- `court-body`: Times New Roman, 12, justified, first-line indent 0.5 inch,
+  single spacing, space after 6.
+- `court-heading`: Times New Roman, 14, bold, centered, space before/after 12.
+- `single-space-reset`: single spacing, space before/after 0, no indents.
+Builtin values must satisfy R6 (labels only — no legal logic in the engine).
+
+### Completion Test
+
+- [ ] `src/formatting/profiles.ts` exists
+- [ ] `npx tsc --noEmit` passes
+- [ ] All 5 exports present; invalid JSON/unknown fields rejected with messages
+- [ ] Applying twice is a no-op the second time (R3)
+
+---
+
+### PHASE 32: PROFILE SECTION IN FORMATTING PANEL
+
+**Prerequisites:** Phases 16, 31 complete
+**Resume Prompt:** `Add the Profiles accordion section to FormattingPanel.tsx. Follow Phase 32 of the plan exactly.`
+
+Add a fourth Accordion section **Profiles** to `src/taskpane/components/FormattingPanel.tsx`:
+Profile `Dropdown` (builtins + imported, shows `name`), scope `RadioGroup`
+(Selection / Document), **Apply** button (affected-count toast per R2),
+**Import** (textarea + button, errors via `setError`), **Export** (read-only
+textarea with selected profile JSON for copy). No Office.js calls in the
+component. `npx tsc --noEmit` passes.
+
+---
+
+## APPENDIX F: NUMBERING AUDIT AND REPAIR (NEW FEATURE — PHASES 33–34)
+
+Motivation (v1 §2.3): the pleadings formatter (Phase 17) prefixes blindly. A
+general-purpose add-in must distinguish **native Word list numbering** from
+**manually typed number prefixes**, audit sequences, and repair only through
+preview-approved plans. Never auto-renumber a document.
+
+### Shared numbering types (added to `src/shared/types.ts` in the Phase 33 session)
+
+```typescript
+export type NumberingKind = "native" | "manual" | "plain";
+export interface NumberedParagraph {
+  paragraphIndex: number;
+  kind: NumberingKind;
+  prefix?: string;    // typed prefix text for "manual"
+  listId?: number;    // native list id when detectable
+  level?: number;     // nesting level when detectable
+}
+export interface NumberingIssue {
+  paragraphIndex: number;
+  issue: "gap" | "duplicate" | "restart" | "mixed-style" | "orphan-level";
+  detail: string;
+}
+export interface NumberingRepairPlan {
+  edits: { paragraphIndex: number; before: string; after: string }[];
+}
+```
+
+### PHASE 33: NUMBERING AUDIT MODULE
+
+**Prerequisites:** Phases 7, 8 complete
+**Resume Prompt:** `Create src/formatting/numbering.ts. Follow Phase 33 of the plan exactly.`
+
+Create `src/formatting/numbering.ts` with three exported functions:
+
+**`auditNumbering(applyTo: "selection" | "document"): Promise<{ data?: { items: NumberedParagraph[]; issues: NumberingIssue[] }; error?: string }>`**
+Read-only, no mutations. Classification per paragraph:
+- **native**: paragraph OOXML `<w:pPr>` contains `<w:numPr>` (native list
+  membership — the only reliable Office.js signal; verify against the installed
+  Word build in the Phase 29 session).
+- **manual**: text matches the typed-prefix language
+  (same pattern family as pleadings removal).
+- **plain**: everything else.
+Issue detection on manual sequences per indent level: gap (`1.,3.`), duplicate
+(`2.,2.`), restart (reset without level change), mixed-style (`1.` then `(a)` at
+one level), orphan-level (level 3 with no level-2 parent). Native items are
+reported, never rewritten by the auditor.
+
+**`previewRepair(issues: NumberingIssue[], items: NumberedParagraph[]): NumberingRepairPlan`**
+Pure. Proposes minimal prefix rewrites for `gap`/`duplicate` issues only —
+restarts and mixed-style are user intent until approved (listed, not rewritten).
+`before`/`after` are full-prefix strings for panel display.
+
+**`applyRepairPlan(plan: NumberingRepairPlan): Promise<{ data?: number; error?: string }>`**
+Applies only the listed edits, re-resolving each paragraph at apply time in
+descending index order and replacing the old prefix with the new one. Any
+paragraph whose current text no longer starts with `before` is skipped and
+reported in the error text with its index (R4/R7). Returns applied count.
+
+### Completion Test
+
+- [ ] `src/formatting/numbering.ts` exists, `npx tsc --noEmit` passes, 3 fns exported
+- [ ] Auditor is read-only (no mutations); native lists never rewritten by repair
+- [ ] Repair of a `1.,2.,2.,4.` selection yields `1.,2.,3.,4.`; rerun reports 0 (R3)
+
+---
+
+### PHASE 34: NUMBERING SECTION IN FORMATTING PANEL
+
+**Prerequisites:** Phases 16, 33 complete
+**Resume Prompt:** `Add the Numbering accordion section to FormattingPanel.tsx. Follow Phase 34 of the plan exactly.`
+
+Add a fifth Accordion section **Numbering**: scope `RadioGroup`, **Audit**
+button → issue list (kind badges native/manual/plain + issue descriptions),
+**Preview Repair** (before→after rows), **Apply Repair** (the previewed plan
+only). Native items display "managed by Word — not edited".
+`npx tsc --noEmit` passes.
+
+---
+
+## APPENDIX G: FOOTNOTE HARDENING DELTAS + TEST FIXTURES (V1 MERGE)
+
+These strengthen Phases 25–29 without changing their shape. Agents running those
+phases apply the deltas below alongside the phase text.
+
+### Scanner deltas (Phase 25)
+
+- **Enumerate existing genuine Word footnotes first** via the supported collection
+  API (verify the exact member on the installed build). Record
+  `existingFootnotes: number` in the scan output (add the field to `ScanResult`
+  in the Phase 25 session) and exclude those paragraphs from block candidates.
+  Never propose converting an already-correct note.
+- Markers that lost superscript are already covered (bracketed/parenthetical
+  passes); record formatting-loss as evidence, not as lower confidence.
+
+### Matcher deltas (Phase 26)
+
+- **One-to-one:** a block feeds at most one marker. Duplicate-number blocks match
+  at best `"medium"`, surface together as conflicting alternatives, and the UI
+  never auto-picks one. Never invent note text; unmatched stays unmatched.
+- Review states: `high` → approve-ready, `medium`/`low` → needs-review,
+  conflicts → must-pick-one.
+
+### Converter deltas (Phase 27)
+
+- **Idempotent:** re-running converts nothing new (re-scan finds no accepted
+  markers left). Test: convert twice, second run converts 0.
+- **Verify before delete:** after `insertFootnote`, confirm the note exists with
+  matching text before deleting marker/block source; on mismatch keep the source
+  and record in `errors[]`.
+- **Preserve surroundings:** marker replacement must not move the reference
+  position or eat adjacent punctuation/spacing. Save/restore user selection.
+
+### Panel deltas (Phase 28)
+
+- Show the existing-genuine-footnote count; conflicts render as must-pick-one rows.
+
+### Fixture matrix (Phase 29; synthetic or redacted text only)
+
+1. Genuine Word footnotes only (expect: zero proposals, existing count correct).
+2. Flattened end-notes, superscript intact.
+3. Flattened notes, superscript lost (plain numbers).
+4. Notes interleaved between body paragraphs (not end-of-doc).
+5. Markers in a different font from body.
+6. Numbered pleadings adjacent to note-like paragraphs (expect: no proposals).
+7. Law-report citations / bibliography (expect: no proposals).
+8. Duplicate numbers, gaps, restarts, missing note text.
+9. Mixed genuine + flattened notes.
+10. Same number twice in different scopes.
+11. Marker with no note; note with no reference.
+12. Dates, decimals, section numbers, exponents, superscript ordinals near notes
+    (expect: no false proposals).
+13. Tables, fields, section breaks, tracked changes around candidates.
+14. Long document (100+ notes) for performance sanity.
+
+### Integrity + honesty rules (Phase 29)
+
+- For every destructive test: unrelated text, styles, native lists, existing
+  footnote count/text, fields, hyperlinks, tracked changes outside the target
+  must be unchanged.
+- Raw `.docx` ZIP equality is not the assertion (Word rewrites XML on save) —
+  use semantic checks.
+- Report unit-only vs Word-run for every test; never claim a Word test passed
+  unless it ran in Word. Record Word build/bitness with results.
+
+---
+
+## APPENDIX H: AMENDMENTS TO UNBUILT PHASES
+
+Read before running any listed phase. Amendments override the phase text on
+conflict (newer decision wins).
+
+- **Phase 16:** every button surfaces counts (toast/summary per R2);
+  whole-document actions confirm first; explain disabled states (audit: silent
+  veto); no Office.js calls in the component (unchanged).
+- **Phase 17:** `applyPleadingsNumbering` must strip existing number prefixes
+  (same regex as removal) before applying — numbering must be idempotent (R3).
+  Removal operates on selection/document explicitly, never whole-document by
+  surprise.
+- **Phase 24:** panel rules as Phase 16; exhibit/schedule counters display next
+  values; destructive inserts confirm.
+- **Phase 25:** apply scanner deltas (Appendix G) alongside phase text.
+- **Phase 26:** apply matcher deltas (Appendix G).
+- **Phase 27:** apply converter deltas (Appendix G) plus the four hardened
+  converter requirements in `decompilation/AUDIT.md`.
+- **Phase 28:** apply panel deltas (Appendix G).
+- **Phase 29:** add the Appendix G fixture matrix, integrity checks, and honesty
+  rules to the test pass. Do not weaken failing tests to green.

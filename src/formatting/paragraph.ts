@@ -179,16 +179,20 @@ export async function removeEmptyParagraphs(): Promise<{ data?: number; error?: 
     await context.sync();
     // Audit lesson (KuTools ^p-in-tables corruption): never delete paragraph marks
     // that terminate table cells — check table membership before deleting.
+    // R4 (plan Appendix D): also skip empty paragraphs carrying bookmarks,
+    // fields, or section breaks — their text is empty but they are structural.
     const empties = paragraphs.items.filter((para) => para.text.trim() === "");
     const tableChecks = empties.map((para) => {
       const t = para.parentTableOrNullObject;
       context.load(t);
       return t;
     });
+    const ooxmlChecks = empties.map((para) => para.getOoxml());
     await context.sync();
+    const PROTECTED = /<w:bookmarkStart[\s>]|<w:fldChar[\s>]|<w:instrText[\s>]|<w:sectPr[\s>]/;
     let deleted = 0;
     for (let i = empties.length - 1; i >= 0; i--) {
-      if (tableChecks[i].isNullObject) {
+      if (tableChecks[i].isNullObject && !PROTECTED.test(ooxmlChecks[i].value)) {
         empties[i].delete();
         deleted++;
       }
