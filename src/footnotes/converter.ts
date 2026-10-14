@@ -78,36 +78,47 @@ export function resolveMarkerParagraph(texts: string[], match: FootnoteMatch): n
  * the full span (starter + continuations) so multi-paragraph blocks are fully
  * removed — never just the starter. Returns descending paragraph indices.
  */
-export function findBlockParagraphIndices(texts: string[], blocks: FootnoteBlock[]): number[] {
+/**
+ * Pure: locate one block (starter + span) in a paragraph-text array. The
+ * starter paragraph's own content must open the block text; the span covers
+ * continuation paragraphs. Returns descending indices, possibly empty.
+ */
+export function locateBlock(texts: string[], block: FootnoteBlock): number[] {
   const starters = [/^\s*\[(\d+)\]/, /^\s*(\d+)[.)]/, /^\s*(\d+)\s{2,}/];
   const stripPrefix = /^\s*(?:\[\d+\]|\d+[.)]|\d+\s{2,})\s*/;
+  for (let i = 0; i < texts.length; i++) {
+    const t = texts[i];
+    let num = -1;
+    for (const re of starters) {
+      const m = t.match(re);
+      if (m) {
+        num = parseInt(m[1], 10);
+        break;
+      }
+    }
+    if (num !== block.number) {
+      continue;
+    }
+    // The starter paragraph's own content must open the (possibly
+    // continuation-merged) block text — never match on merged tail text.
+    const content = t.replace(stripPrefix, "");
+    if (content !== "" && !block.text.startsWith(content.substring(0, Math.min(20, content.length)))) {
+      continue;
+    }
+    const span = Math.max(1, block.span ?? 1);
+    const out: number[] = [];
+    for (let k = 0; k < span && i + k < texts.length; k++) {
+      out.push(i + k);
+    }
+    return out.sort((a, b) => b - a);
+  }
+  return [];
+}
+
+export function findBlockParagraphIndices(texts: string[], blocks: FootnoteBlock[]): number[] {
   const found: number[] = [];
   for (const block of blocks) {
-    for (let i = 0; i < texts.length; i++) {
-      const t = texts[i];
-      let num = -1;
-      for (const re of starters) {
-        const m = t.match(re);
-        if (m) {
-          num = parseInt(m[1], 10);
-          break;
-        }
-      }
-      if (num !== block.number) {
-        continue;
-      }
-      // The starter paragraph's own content must open the (possibly
-      // continuation-merged) block text — never match on merged tail text.
-      const content = t.replace(stripPrefix, "");
-      if (content !== "" && !block.text.startsWith(content.substring(0, Math.min(20, content.length)))) {
-        continue;
-      }
-      const span = Math.max(1, block.span ?? 1);
-      for (let k = 0; k < span && i + k < texts.length; k++) {
-        found.push(i + k);
-      }
-      break;
-    }
+    found.push(...locateBlock(texts, block));
   }
   return [...new Set(found)].sort((a, b) => b - a);
 }
@@ -242,15 +253,28 @@ async function convertMatches(
     }
 
     // Phase C — delete original block paragraphs (re-located, descending).
+    // Contract: an identified footnote's citation text moves into the genuine
+    // footnote AND its body source is removed. Any block that cannot be
+    // re-located is reported (source left in body) — never silently kept.
     const delParas = body.paragraphs;
     delParas.load("text");
     await context.sync();
     const delTexts = delParas.items.map((p) => p.text);
-    const indices = findBlockParagraphIndices(
-      delTexts,
-      inserted.map((x) => x.match.block)
-    );
-    for (const idx of indices) {
+    const indices: number[] = [];
+    for (const entry of inserted) {
+      const located = locateBlock(delTexts, entry.match.block);
+      if (located.length === 0) {
+        failed++;
+        errors.push(
+          `Note ${entry.match.marker.number}: footnote created but block text ` +
+            `not re-located (edited since scan?) — source left in body.`
+        );
+        continue;
+      }
+      indices.push(...located);
+    }
+    const unique = [...new Set(indices)].sort((a, b) => b - a);
+    for (const idx of unique) {
       delParas.items[idx].delete();
     }
     await context.sync();
@@ -299,11 +323,28 @@ export async function deleteFootnoteBlocks(
     paras.load("text");
     await context.sync();
     const texts = paras.items.map((p) => p.text);
-    const indices = findBlockParagraphIndices(texts, blocks);
-    for (const idx of indices) {
+    const indices: number[] = [];
+    const missing: number[] = [];
+    for (const block of blocks) {
+      const located = locateBlock(texts, block);
+      if (located.length === 0) {
+        if (!missing.includes(block.number)) {
+          missing.push(block.number);
+        }
+        continue;
+      }
+      indices.push(...located);
+    }
+    const unique = [...new Set(indices)].sort((a, b) => b - a);
+    for (const idx of unique) {
       paras.items[idx].delete();
     }
     await context.sync();
-    return indices.length;
+    if (missing.length > 0) {
+      throw new Error(
+        `Could not re-locate block(s) ${missing.join(", ")} — left in body.`
+      );
+    }
+    return unique.length;
   });
 }

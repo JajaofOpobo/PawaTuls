@@ -2457,3 +2457,14 @@ Resource IDs capped at 23 chars (schema limit 32).
 9. **Undo path:** every conversion runs in one Word.run (single Ctrl+Z unit);
    ConversionResult.insertions logs each insertion + source removed (revert UI
    deferred, log written as specified).
+
+### Conversion contract (identified footnote behavior)
+
+An approved match converts the citation block into a genuine Word footnote and
+removes it from the body, exactly: (a) the marker at its position becomes the
+footnote reference (marker text deleted, surroundings preserved); (b) the full
+block span — starter plus continuations — is re-located by content and deleted
+in descending order; (c) any block that cannot be re-located aborts its own
+deletion with an explicit error (source left in body, never silently kept or
+duplicated); (d) the footnote-count gate runs before any deletion; (e) reruns
+convert nothing new (idempotent).

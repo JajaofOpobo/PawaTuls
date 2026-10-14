@@ -171,7 +171,7 @@ function check(name, fn) {
 
 // ─── converter pure helpers ────────────────────────────────────────────────
 {
-  const { findBlockParagraphIndices, resolveMarkerParagraph } = load("footnotes/converter.ts");
+  const { findBlockParagraphIndices, locateBlock, resolveMarkerParagraph } = load("footnotes/converter.ts");
   check("converter: block spans delete fully", () => {
     const texts = ["Body", "1. First note", "continued note", "Body middle", "2. Second"];
     const idx = findBlockParagraphIndices(texts, [
@@ -179,6 +179,18 @@ function check(name, fn) {
       { number: 2, text: "Second", paragraphIndex: 4 },
     ]);
     assert.deepStrictEqual(idx, [4, 2, 1]);
+  });
+  check("converter: unlocated blocks reported, no silent keep", () => {
+    const texts = ["Body", "1. First note", "Body middle"];
+    // Edited since scan: starter text changed beyond recognition.
+    assert.deepStrictEqual(locateBlock(texts, { number: 1, text: "Totally rewritten note", paragraphIndex: 1 }), []);
+    // Merged-tail text alone never matches (starter content required).
+    assert.deepStrictEqual(locateBlock(["Body", "continued note"], { number: 1, text: "First note continued note", paragraphIndex: 1, span: 2 }), []);
+    // SpanKP: full span returned when starter matches.
+    assert.deepStrictEqual(
+      locateBlock(["Body", "1. First note", "continued note"], { number: 1, text: "First note continued note", paragraphIndex: 1, span: 2 }),
+      [2, 1]
+    );
   });
   check("converter: resolve by hint + context", () => {
     const texts = ["Ordinary 2024 figures here.", "Treaty history [1] shows agreement here."];
