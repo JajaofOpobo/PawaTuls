@@ -7,8 +7,10 @@ Reference document: `kutools-test.docx` (created by `make-testdoc.ps1` — Headi
 
 ## Phase 1: Behavioral inspection status — PARTIAL (automation infeasible)
 
-- KuTools 8.2 installed silently (`/VERYSILENT`), registered as `WordKutools.Connect`
-  + `WordKutoolsCheck.Connect` (HKCU + HKLM) and connects in headless Word (`Connect=True`).
+- KuTools 8.2 was installed silently (`/VERYSILENT`), registered and verified
+  connecting in Word. **Uninstalled 2026-10-14 after analysis to avoid a UI clash
+  (its ribbon tab is branded "Enterprise"); decompilation artifacts retained
+  (`kutools-source/`, notes in this file, `api-map.md`, `AUDIT.md`).**
 - `probe-kutools.ps1` proves KuTools exposes **no automation API** (`COMAddIn.Object` is null)
   and creates **no CommandBar controls** (Ribbon-XML UI only). Its buttons cannot be
   driven headlessly — the 20+ before/after operation observations in the plan require
