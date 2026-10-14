@@ -57,7 +57,7 @@ export async function selectHeadings(): Promise<{ data?: SelectResult; error?: s
     const paragraphs = context.document.body.paragraphs;
     paragraphs.load("text, style");
     await context.sync();
-    const headings = paragraphs.items.filter((p) => String(p.style).startsWith("Heading"));
+    const headings = paragraphs.items.filter((p) => /^heading/i.test(String(p.style)));
     return selectFirstOf(context, headings);
   });
 }

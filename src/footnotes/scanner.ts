@@ -217,7 +217,7 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
     // content, never footnote blocks. Non-hygienic paragraphs also break
     // continuation chains so headings cannot merge into a previous block.
     const hygienic = (i: number): boolean => {
-      if (String(paras.items[i].style).startsWith("Heading")) {
+      if (/^heading/i.test(String(paras.items[i].style))) {
         return false;
       }
       if (!listItems[i].isNullObject) {
@@ -300,7 +300,7 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
       sizes.length > 0 ? [...sizes].sort((a, b) => a - b)[Math.floor(sizes.length / 2)] : 0;
     const headings: { index: number; text: string }[] = [];
     for (let i = 0; i < count; i++) {
-      if (String(paras.items[i].style).startsWith("Heading")) {
+      if (/^heading/i.test(String(paras.items[i].style))) {
         headings.push({ index: i, text: texts[i] });
       }
     }
