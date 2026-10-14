@@ -159,3 +159,25 @@ export interface ConversionResult {
   failed: number;
   errors: string[];
 }
+
+// ─── NUMBERING AUDIT (Appendix F, Phase 33) ───────────────────────────────────
+
+export type NumberingKind = "native" | "manual" | "plain";
+
+export interface NumberedParagraph {
+  paragraphIndex: number;
+  kind: NumberingKind;
+  prefix?: string;    // typed prefix text for "manual"
+  listId?: number;    // native list id when detectable
+  level?: number;     // nesting level when detectable
+}
+
+export interface NumberingIssue {
+  paragraphIndex: number;
+  issue: "gap" | "duplicate" | "restart" | "mixed-style" | "orphan-level";
+  detail: string;
+}
+
+export interface NumberingRepairPlan {
+  edits: { paragraphIndex: number; before: string; after: string }[];
+}
