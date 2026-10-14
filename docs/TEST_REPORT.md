@@ -2,7 +2,11 @@
 
 Word build/bitness: recorded at manual-test time below.
 `tsc --noEmit`: clean (per-commit, CI-equivalent).
-`npm run build`: compiles (3 size warnings only).
+`npm run build`: emits complete current `dist/` (taskpane.js minimized) but the
+Node process crashes post-emit in a minifier worker thread (exit 1, twice,
+2026-10-14) — environmental flake under investigation (dev server resident at
+the time); not a code error. Sideloading uses `webpack serve` and is unaffected.
+Retry with the dev server stopped if a clean exit code is needed.
 
 ## Automated (ran 2026-10-14, no Word required)
 
