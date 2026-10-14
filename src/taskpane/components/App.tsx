@@ -6,8 +6,17 @@ import { FootnotePanel } from "./FootnotePanel";
 
 type ActiveTab = "format" | "footnotes";
 
+function initialTab(): ActiveTab {
+  try {
+    const tab = new URLSearchParams(window.location.search).get("tab");
+    return tab === "footnotes" ? "footnotes" : "format";
+  } catch {
+    return "format";
+  }
+}
+
 export function App(): React.JSX.Element {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("format");
+  const [activeTab, setActiveTab] = useState<ActiveTab>(initialTab);
   const [error, setError] = useState<string | null>(null);
 
   return (

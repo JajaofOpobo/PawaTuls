@@ -244,7 +244,16 @@ export function FootnotePanel({ setError }: FootnotePanelProps): React.JSX.Eleme
                     </TableCell>
                     <TableCell>{truncate(m.block.text, 80)}</TableCell>
                     <TableCell>
-                      <Badge appearance="filled" color={confidenceColor(m.confidence)}>
+                      <Badge
+                        appearance="filled"
+                        color={confidenceColor(m.confidence)}
+                        title={[
+                          ...m.pairingEvidence,
+                          ...m.contradictions.map((c) => `Against: ${c}`),
+                          ...(m.block.boundaryUncertain ? ["Boundary needs eyes"] : []),
+                          ...(m.block.mergedSuspect ? ["Possible prose merge — review"] : []),
+                        ].join(" | ")}
+                      >
                         {m.confidence}
                       </Badge>
                     </TableCell>

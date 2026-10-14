@@ -2389,3 +2389,44 @@ run-splitting: original run properties are restored on continuing text,
 already-superscript runs are skipped, cross-run matches count as skipped.
 Returns `{ changed, skipped }`. Verified by executed assertions (split shape,
 format preservation, superscript skip, balanced XML).
+
+---
+
+## APPENDIX J ADDENDUM: EVIDENCE MODEL + RIBBON TAB
+
+### Evidence model (replaces the single-confidence design)
+
+Footnote recovery is three separate decisions with separate scores
+(`EVIDENCE_MODEL v1` in `src/footnotes/matcher.ts`; weights provisional,
+thresholds high ≥ 70 / medium ≥ 40 — not probabilities):
+
+- **Block classification** (`FootnoteBlock.blockLikelihood` 0–100): sequential-run
+  membership +20, note region +10, citation combinations +15/+5, ibid chains +10,
+  smaller-than-body font +5, hanging indent +5; contradictions explicit
+  (bibliography heading −30, others −15).
+- **Citation content** (`citationLikelihood` 0–100): systems ×25, shorthand ×10,
+  lone year +5 (Tier D: weak cues never decisive alone).
+- **Pairing** (`pairingEvidence[]` + `contradictions[]` on each match):
+  number/region base, sequence continuity +10, ambiguity/density/structure caps
+  at medium, reference-signal boost low→medium (non-dense only).
+- **Boundaries:** long unmarked citation-free prose after a multi-note cluster
+  ends the cluster (no fixed cutoff as sole decision); single-footnote pages
+  exempt; manual-area selections re-score with the last block flagged
+  boundary-uncertain; possible prose merges flagged, never auto-split.
+- Citation systems recognized: Nigerian Law Reports, Statutes, Neutral,
+  Academic Bracket (covers IEEE/Vancouver/GOST-numeric shapes), Author-Date
+  (Harvard-like), OSCOLA, Bluebook, Chicago, MLA, Ibid Chain (chain signal only —
+  never density, since a lone "Ibid." is usually a genuine note).
+- Review UI shows evidence/contradictions per row (badge tooltip); conflicts
+  render as must-pick-one rows; only high-confidence first references start
+  checked; restoration stays approval-gated and verified.
+
+### Ribbon tab (Phase 44 — built)
+
+Custom `PawaTuls.Tab` (renders after built-in tabs) with Formatting group
+(Format Pane, Bold, Clear All, Empty Paras, Ordinals) and Footnotes group
+(Footnotes Pane, Remove Notes, Endnote→Text). Pane buttons deep-link via
+`?tab=` (App reads it for the initial tab); quick actions are headless
+`ExecuteFunction` calls (failures silent by design — use pane buttons for
+reported runs). Manifest 1.1.0.0 — re-sideload (`npm start`) to pick it up.
+Resource IDs capped at 23 chars (schema limit 32).

@@ -59,6 +59,7 @@ npm run build    # production build → dist/
   restoring the tab and building Phases 17–24 per plan + Appendix H.
 - [x] Phases 25–28, 37 — footnote scanner/matcher/converter/panel + note management
 - [x] Phases 41–43 (Appendix J) — manual block-area override, citation systems, ordinal superscripting
+- [x] Phase 44 + evidence model — ribbon tab with quick actions; tiered evidence scoring with contradictions
 - [ ] Phases 10–30 — feature modules, panels, testing, packaging
 
 Note: `tsconfig.json` intentionally has no `noEmit` (webpack `ts-loader` needs emit;

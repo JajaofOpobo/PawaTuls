@@ -130,6 +130,14 @@ export interface FootnoteBlock {
   text: string;
   paragraphIndex: number;
   citationDense?: boolean;   // paragraph matches a citation system (Appendix J)
+  referenceSignals?: boolean; // text carries reference/citation signals (App. J)
+  followedByLarge?: boolean;  // next paragraph is much larger (Appendix J)
+  // Appendix J evidence model (separate block assessment):
+  blockLikelihood?: number;     // 0–100, provisional (not a probability)
+  citationLikelihood?: number;  // 0–100, provisional
+  contradictions?: string[];    // explicit counter-evidence
+  boundaryUncertain?: boolean;  // start/end boundary needs user eyes
+  mergedSuspect?: boolean;      // body prose possibly merged with note text
 }
 
 export type MatchConfidence = "high" | "medium" | "low";
@@ -140,6 +148,8 @@ export interface FootnoteMatch {
   block: FootnoteBlock;
   confidence: MatchConfidence;
   accepted: boolean;
+  pairingEvidence: string[];   // Appendix J: why this pairing was proposed
+  contradictions: string[];    // Appendix J: counter-evidence (explicit)
 }
 
 export interface ScanResult {

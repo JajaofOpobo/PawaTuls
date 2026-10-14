@@ -49,6 +49,8 @@ decision) · **unsupported** (no Office.js API).
 | Manual footnote-block area override | built (Phase 41, Appendix J) |
 | Citation-system identification + certainty/consistency | built (Phase 42, Appendix J) |
 | Ordinal superscripting (1st, 2nd …) | built (Phase 43, Appendix J) |
+| Evidence model (tiers, contradictions, boundary rule) | built (Appendix J addendum) |
+| Ribbon tab + quick actions | built (Phase 44: PawaTuls tab, manifest 1.1.0.0) |
 | Remove macros (VBA) | unsupported: no Office API touches the VBA project |
 | Equation → image / image → equation | unsupported: no OMath API in Office.js |
 

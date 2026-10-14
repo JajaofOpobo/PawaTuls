@@ -16,7 +16,7 @@
  */
 import { FootnoteBlock, FootnoteMarker, MarkerPattern } from "../shared/types";
 import { safeWordRun } from "../shared/wordUtils";
-import { detectCitationSystems } from "./citations";
+import { detectAcademicShorthand, detectCitationSystems, detectReferenceSignals } from "./citations";
 
 export interface CitationSystemCount {
   system: string;
@@ -83,7 +83,7 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
     const notes = body.footnotes;
     notes.load("items");
     const paras = body.paragraphs;
-    paras.load("text, style");
+    paras.load("text, style, firstLineIndent, leftIndent");
     await context.sync();
 
     const existingFootnotes = notes.items.length;
@@ -92,7 +92,8 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
 
     // Stress-test lesson: body content (numbered headings, native-list items,
     // table cells) must never become footnote blocks. Batch the membership
-    // checks with the marker searches below.
+    // checks with the marker searches below. Font sizes feed the Tier C
+    // formatting signal (notes are often set smaller than body text).
     const listItems = paras.items.map((p) => {
       const li = p.listItemOrNullObject;
       context.load(li);
@@ -103,11 +104,16 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
       context.load(t);
       return t;
     });
+    const fonts = paras.items.map((p) => {
+      const f = p.font;
+      f.load("size");
+      return f;
+    });
 
     // Appendix J: citation systems feed certainty (dense paragraphs are
     // citation lists/bibliographies, not footnote blocks) and consistency.
     const citation = detectCitationSystems(texts);
-    const denseSet = new Set(citation.denseParagraphs);
+    const denseSet = new Set(citation.listDense);
 
     interface Job {
       index: number;
@@ -222,7 +228,14 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
       }
       return true;
     };
+    // §4 boundary rule: a long, unmarked, citation-free paragraph after a
+    // multi-note cluster usually ENDS the cluster — do not merge it. Length
+    // is one input among several, never the sole decision; long genuine
+    // notes are still allowed as numbered starts.
+    const isLongProse = (t: string): boolean =>
+      t.length > 400 && detectReferenceSignals(t).score === 0;
     let lastBlockIdx = -2;
+    let numberedStarts = 0;
     for (let i = 0; i < count; i++) {
       if (separatorFound && i <= separatorIndex) {
         continue;
@@ -238,18 +251,115 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
         }
       }
       if (m) {
+        const blockText = m[2].trim();
         blocks.push({
           number: parseInt(m[1], 10),
-          text: m[2].trim(),
+          text: blockText,
           paragraphIndex: i,
           citationDense: denseSet.has(i),
+          referenceSignals: detectReferenceSignals(blockText).score > 0,
         });
         lastBlockIdx = i;
-      } else if (t.trim() !== "" && lastBlockIdx === i - 1 && hygienic(i)) {
+        numberedStarts++;
+      } else if (
+        t.trim() !== "" &&
+        lastBlockIdx === i - 1 &&
+        hygienic(i) &&
+        !(numberedStarts >= 2 && isLongProse(t.trim()))
+      ) {
         blocks[blocks.length - 1].text += ` ${t.trim()}`;
         lastBlockIdx = i;
       }
     }
+
+    // Structural heuristic: a footnote is rarely followed by a large body
+    // paragraph — except on single-footnote pages, where the rule is skipped.
+    // Threshold documented: next paragraph over 400 chars.
+    if (blocks.length > 1) {
+      for (const block of blocks) {
+        if (block.paragraphIndex < 0) {
+          continue;
+        }
+        const next = texts[block.paragraphIndex + 1];
+        block.followedByLarge = next !== undefined && next.length > 400;
+      }
+    }
+    // Recompute signals on final (continuation-merged) text.
+    for (const block of blocks) {
+      block.referenceSignals = detectReferenceSignals(block.text).score > 0;
+    }
+
+    // Appendix J §1/§6: separate block assessment. Provisional weights
+    // (EVIDENCE_MODEL v1, see matcher.ts); scores are review tiers, not
+    // probabilities. Formatting signals: notes often run smaller than body
+    // text or carry hanging indents.
+    const sizes = fonts
+      .map((f) => f.size)
+      .filter((s): s is number => typeof s === "number");
+    const medianSize =
+      sizes.length > 0 ? [...sizes].sort((a, b) => a - b)[Math.floor(sizes.length / 2)] : 0;
+    const headings: { index: number; text: string }[] = [];
+    for (let i = 0; i < count; i++) {
+      if (String(paras.items[i].style).startsWith("Heading")) {
+        headings.push({ index: i, text: texts[i] });
+      }
+    }
+    const biblioHeadingAbove = (paraIndex: number): string | null => {
+      for (const h of headings) {
+        if (
+          h.index < paraIndex &&
+          paraIndex - h.index <= 3 &&
+          /references|bibliography|works cited/i.test(h.text)
+        ) {
+          return h.text.trim().substring(0, 60);
+        }
+      }
+      return null;
+    };
+    blocks.forEach((block, bi) => {
+      const sig = detectReferenceSignals(block.text);
+      const shorthand = detectAcademicShorthand(block.text);
+      let score = 50;
+      const contradictions: string[] = [];
+      const prev = bi > 0 ? blocks[bi - 1] : null;
+      if (prev !== null && prev.number === block.number - 1) {
+        score += 20; // Tier A: sequential run membership
+      }
+      if (separatorFound && block.paragraphIndex > separatorIndex) {
+        score += 10; // Tier C: plausible note region
+      }
+      if (sig.score >= 2) {
+        score += 15; // Tier B: citation combinations (never sufficient alone)
+      } else if (sig.score === 1) {
+        score += 5;
+      }
+      if (sig.hasIbid) {
+        score += 10; // Tier B: short-form reference chain
+      }
+      const size = block.paragraphIndex >= 0 ? fonts[block.paragraphIndex].size : null;
+      if (typeof size === "number" && medianSize > 0 && size < medianSize - 0.5) {
+        score += 5; // Tier C: smaller than body text
+      }
+      if (block.paragraphIndex >= 0) {
+        const para = paras.items[block.paragraphIndex];
+        if (para.firstLineIndent < 0 && para.leftIndent > 0) {
+          score += 5; // Tier C: hanging indent
+        }
+      }
+      const biblio = block.paragraphIndex >= 0 ? biblioHeadingAbove(block.paragraphIndex) : null;
+      if (biblio !== null) {
+        contradictions.push(`bibliography: under "${biblio}" heading`);
+      }
+      block.blockLikelihood = Math.max(0, Math.min(100, score));
+      block.citationLikelihood = Math.min(
+        100,
+        sig.systems.length * 25 + shorthand.length * 10 + (sig.hasYear ? 5 : 0) + (sig.hasIbid ? 10 : 0)
+      );
+      block.contradictions = contradictions;
+      // Long explanatory notes are allowed; flag possible prose-merge for review.
+      block.mergedSuspect = block.text.length > 1000;
+      block.boundaryUncertain = block.followedByLarge === true;
+    });
 
     return {
       markers,
@@ -308,6 +418,24 @@ export async function scanSelectionBlocks(): Promise<{
         prevContinues = false;
       }
     });
+    // Manual area narrows the domain but certifies nothing: re-score the
+    // selection, propose the last block as the uncertain boundary, and keep
+    // review-grade confidence (matcher caps apply normally).
+    blocks.forEach((block, bi) => {
+      const sig = detectReferenceSignals(block.text);
+      block.referenceSignals = sig.score > 0;
+      block.blockLikelihood = 50 + Math.min(20, sig.score * 5);
+      block.citationLikelihood = Math.min(100, sig.systems.length * 25);
+      block.contradictions = [];
+      block.mergedSuspect = block.text.length > 1000;
+      block.boundaryUncertain = bi === blocks.length - 1;
+    });
+    if (blocks.length > 0) {
+      blocks[blocks.length - 1].contradictions = [
+        ...(blocks[blocks.length - 1].contradictions ?? []),
+        "manual area: end boundary unverified — adjust selection if the last note runs on",
+      ];
+    }
     return blocks;
   });
 }
