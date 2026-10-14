@@ -83,6 +83,14 @@ import {
   paragraphMarksToLineBreaks,
 } from "../../formatting/convert";
 import { insertCaption, refreshCaptions } from "../../formatting/captions";
+import {
+  selectEmptyParagraphs,
+  selectHeadings,
+  selectPictures,
+  selectShortParagraphs,
+  selectTables,
+  SelectResult,
+} from "../../formatting/select";
 import { clearFormatting } from "../../formatting/clear";
 import { CaseTransform, LineSpacingRule } from "../../shared/types";
 
@@ -186,6 +194,20 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
       setError(result.error);
     } else {
       notify(`${result.data ?? 0} ${noun}`);
+    }
+  }
+
+  async function runSelect(
+    op: Promise<{ data?: SelectResult; error?: string }>,
+    noun: string
+  ): Promise<void> {
+    const result = await op;
+    if (result.error) {
+      setError(result.error);
+    } else if ((result.data?.total ?? 0) === 0) {
+      notify(`No ${noun} found`);
+    } else {
+      notify(`${result.data?.total} ${noun} — first selected`);
     }
   }
 
@@ -694,6 +716,27 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
                 Bookmarks
               </Button>
             </div>
+          </AccordionPanel>
+        </AccordionItem>
+
+        <AccordionItem value="select">
+          <AccordionHeader>Select</AccordionHeader>
+          <AccordionPanel>
+            <Button onClick={() => void runSelect(selectTables(), "table(s)")}>
+              Select Tables
+            </Button>
+            <Button onClick={() => void runSelect(selectEmptyParagraphs(), "empty paragraph(s)")}>
+              Empty Paragraphs
+            </Button>
+            <Button onClick={() => void runSelect(selectHeadings(), "heading(s)")}>
+              Headings
+            </Button>
+            <Button onClick={() => void runSelect(selectShortParagraphs(), "short paragraph(s)")}>
+              Short Paragraphs
+            </Button>
+            <Button onClick={() => void runSelect(selectPictures(), "picture(s)")}>
+              Pictures
+            </Button>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
