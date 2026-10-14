@@ -52,6 +52,26 @@ import {
   previewRepair,
 } from "../../formatting/numbering";
 import {
+  removeAllBreaks,
+  removeBookmarks,
+  removeColumnBreaks,
+  removeComments,
+  removeContentControls,
+  removeDropCap,
+  removeEmptyLines,
+  removeEmptyTableColumns,
+  removeEmptyTableRows,
+  removeFrames,
+  removeHiddenText,
+  removeHyperlinks,
+  removePageBreaks,
+  removePictures,
+  removeSectionBreaks,
+  removeTables,
+  removeTextBoxes,
+  tabToSpace,
+} from "../../formatting/removal";
+import {
   FormattingProfile,
   NumberingIssue,
   NumberedParagraph,
@@ -573,6 +593,78 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
                 <p>Native lists are managed by Word — never edited by repair.</p>
               </div>
             )}
+          </AccordionPanel>
+        </AccordionItem>
+
+        <AccordionItem value="remove">
+          <AccordionHeader>Remove</AccordionHeader>
+          <AccordionPanel>
+            <h4>Breaks</h4>
+            <div>
+              <Button onClick={() => void runCount(removePageBreaks(), "page break(s) removed")}>
+                Page Breaks
+              </Button>
+              <Button onClick={() => void runCount(removeColumnBreaks(), "column break(s) removed")}>
+                Column Breaks
+              </Button>
+              <Button onClick={() => void runCount(removeSectionBreaks(), "section break(s) removed")}>
+                Section Breaks
+              </Button>
+              <Button onClick={() => void runCount(removeAllBreaks(), "break(s) removed")}>
+                All Breaks
+              </Button>
+            </div>
+            <h4>Hidden &amp; Marks</h4>
+            <div>
+              <Button onClick={() => void runCount(removeHiddenText(), "hidden run(s) removed")}>
+                Hidden Text
+              </Button>
+              <Button onClick={() => void runCount(removeDropCap(), "drop cap(s) removed")}>
+                Drop Caps
+              </Button>
+              <Button onClick={() => void runCount(removeFrames(), "frame(s) removed")}>
+                Frames
+              </Button>
+              <Button onClick={() => void runCount(removeEmptyLines(), "line run(s) collapsed")}>
+                Empty Lines
+              </Button>
+              <Button onClick={() => void runCount(tabToSpace(), "paragraph(s) detabbed")}>
+                Tabs → Spaces
+              </Button>
+            </div>
+            <h4>Tables &amp; Objects</h4>
+            <div>
+              <Button onClick={() => void runCount(removeTables(), "table(s) removed")}>
+                Tables
+              </Button>
+              <Button onClick={() => void runCount(removeEmptyTableRows(), "empty row(s) removed")}>
+                Empty Rows
+              </Button>
+              <Button onClick={() => void runCount(removeEmptyTableColumns(), "empty column(s) removed")}>
+                Empty Cols
+              </Button>
+              <Button onClick={() => void runCount(removePictures(), "picture(s) removed")}>
+                Pictures
+              </Button>
+              <Button onClick={() => void runCount(removeTextBoxes(), "text box(es) removed")}>
+                Text Boxes
+              </Button>
+              <Button onClick={() => void runCount(removeContentControls(), "control(s) removed")}>
+                Controls
+              </Button>
+            </div>
+            <h4>References</h4>
+            <div>
+              <Button onClick={() => void runCount(removeComments(), "comment(s) removed")}>
+                Comments
+              </Button>
+              <Button onClick={() => void runCount(removeHyperlinks(), "hyperlink(s) removed")}>
+                Hyperlinks
+              </Button>
+              <Button onClick={() => void runCount(removeBookmarks(), "bookmark(s) removed")}>
+                Bookmarks
+              </Button>
+            </div>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
