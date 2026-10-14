@@ -117,7 +117,7 @@ async function convertMatches(
 ): Promise<{ data?: ConversionResult; error?: string }> {
   const errors: string[] = [];
   if (matches.length === 0) {
-    return { data: { converted: 0, failed: 0, errors } };
+    return { data: { converted: 0, failed: 0, errors, insertions: [] } };
   }
   return safeWordRun(async (context) => {
     const body = context.document.body;
@@ -238,7 +238,7 @@ async function convertMatches(
         `Verification failed: expected ${inserted.length} new footnote(s), found ${created}. ` +
           `Block source paragraphs left intact; review the document before retrying.`
       );
-      return { converted: 0, failed: failed + inserted.length, errors };
+      return { converted: 0, failed: failed + inserted.length, errors, insertions: [] };
     }
 
     // Phase C — delete original block paragraphs (re-located, descending).
@@ -255,7 +255,18 @@ async function convertMatches(
     }
     await context.sync();
 
-    return { converted: inserted.length, failed, errors };
+    return {
+      converted: inserted.length,
+      failed,
+      errors,
+      insertions: inserted.map((x) => ({
+        markerNumber: x.match.marker.number,
+        pattern: x.match.marker.pattern,
+        footnoteText: x.match.block.text,
+        markerParagraphIndex: x.match.marker.paragraphIndex,
+        blockParagraphIndex: x.match.block.paragraphIndex,
+      })),
+    };
   });
 }
 

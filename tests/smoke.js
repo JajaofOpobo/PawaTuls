@@ -94,12 +94,25 @@ function check(name, fn) {
       ["vol.", "pp.", "ed.", "URL"]
     );
   });
+  check("citations: Nigerian signals + merge candidates", () => {
+    const s = C.detectReferenceSignals("Per Adeyemi JSC in FCT/HC/CV/123/2024, see NWLR.");
+    assert.ok(s.hasReporter && s.hasSuitNumber && s.hasPerJ, JSON.stringify(s));
+    assert.ok(!C.detectReferenceSignals("Plain prose.").hasReporter);
+    const mg = C.detectMergeCandidate(
+      "The apex court held at length that no tribunal can divest itself of jurisdiction merely by declining to exercise it, a principle established early in Nigerian jurisprudence over many decades of appellate decisions across several judicial divisions. 5 See Smith (2021) on jurisdiction generally and Jones et al. for further commentary."
+    );
+    assert.ok(mg.suspect && mg.splitAt > 0, JSON.stringify(mg));
+    const mg2 = C.detectMergeCandidate("1. See Smith (2021) on jurisdiction.");
+    assert.strictEqual(mg2.suspect, false, "leading label is not embedded");
+    const mg3 = C.detectMergeCandidate("In 1919 the committee met and resolved nothing.");
+    assert.strictEqual(mg3.suspect, false, "years are not markers");
+  });
 }
 
 // ─── matcher ───────────────────────────────────────────────────────────────
 {
-  const { buildMatchTable, EVIDENCE_MODEL } = load("footnotes/matcher.ts");
-  assert.strictEqual(EVIDENCE_MODEL.version, "1.0");
+  const { buildMatchTable, excludeNativeLeadingMarkers, EVIDENCE_MODEL } = load("footnotes/matcher.ts");
+  assert.strictEqual(EVIDENCE_MODEL.version, "1.1");
   const mk = (n, pi) => ({ number: n, pattern: "bracketed", paragraphIndex: pi, contextBefore: "", contextAfter: "" });
   const blk = (n, pi, extra) => Object.assign({ number: n, text: "Note", paragraphIndex: pi }, extra);
   check("matcher: high default + repeat/conflict unchecked", () => {
@@ -136,6 +149,23 @@ function check(name, fn) {
     const m = buildMatchTable([mk(3, 1)], [blk(3, 2, { referenceSignals: true })], true, 5);
     assert.strictEqual(m[0].confidence, "medium");
     assert.ok(m[0].pairingEvidence.length > 0);
+  });
+  check("matcher: gap decay + native exclusion", () => {
+    const seq = [1, 2, 4, 5, 6, 7, 8, 9].map((n, i) => mk(n, i));
+    const blks = [1, 2, 4, 5, 6, 7, 8, 9].map((n, i) => blk(n, 20 + i));
+    let m = buildMatchTable(seq, blks, false, -1);
+    assert.ok(m.every((x) => x.confidence === "high"), "gap of 1 in long run keeps high");
+    const g3 = [1, 2, 8, 9].map((n, i) => mk(n, i));
+    const gb = [1, 2, 8, 9].map((n, i) => blk(n, 20 + i));
+    m = buildMatchTable(g3, gb, false, -1);
+    assert.ok(m.every((x) => x.confidence !== "high"), "gap of 3+ forces review");
+    assert.ok(m[0].contradictions.some((c) => c.indexOf("gap") >= 0));
+    const sup = (n, pi) => ({ number: n, pattern: "superscript", paragraphIndex: pi, contextBefore: "", contextAfter: "" });
+    const dup = [sup(1, 0), sup(1, 5), sup(2, 9)];
+    const kept = excludeNativeLeadingMarkers(dup, 1);
+    assert.deepStrictEqual(kept.map((x) => x.paragraphIndex), [5, 9], "native leading dropped");
+    assert.strictEqual(excludeNativeLeadingMarkers(dup, 0).length, 3, "no exclusion without natives");
+    assert.strictEqual(excludeNativeLeadingMarkers([sup(1, 0), sup(2, 9)], 1).length, 2, "no duplication, no drop");
   });
 }
 

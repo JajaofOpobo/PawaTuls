@@ -141,6 +141,7 @@ export interface FootnoteBlock {
   contradictions?: string[];    // explicit counter-evidence
   boundaryUncertain?: boolean;  // start/end boundary needs user eyes
   mergedSuspect?: boolean;      // body prose possibly merged with note text
+  mergedSplitAt?: number;       // proposed split offset (review only, never auto-split)
 }
 
 export type MatchConfidence = "high" | "medium" | "low";
@@ -171,6 +172,17 @@ export interface ConversionResult {
   converted: number;
   failed: number;
   errors: string[];
+  /** Insertion log: every footnote created + every source removed. The whole
+   * conversion runs in one Word.run (single undo unit — Ctrl+Z reverts the
+   * batch); this log is the manual-recovery record if granular undo is ever
+   * needed (revert UI deferred by design). */
+  insertions: {
+    markerNumber: number;
+    pattern: string;
+    footnoteText: string;
+    markerParagraphIndex: number;
+    blockParagraphIndex: number;
+  }[];
 }
 
 // ─── NUMBERING AUDIT (Appendix F, Phase 33) ───────────────────────────────────

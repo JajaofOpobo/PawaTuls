@@ -16,7 +16,8 @@
  */
 import { FootnoteBlock, FootnoteMarker, MarkerPattern } from "../shared/types";
 import { safeWordRun } from "../shared/wordUtils";
-import { detectAcademicShorthand, detectCitationSystems, detectReferenceSignals } from "./citations";
+import { detectAcademicShorthand, detectCitationSystems, detectMergeCandidate, detectReferenceSignals } from "./citations";
+import { excludeNativeLeadingMarkers } from "./matcher";
 
 export interface CitationSystemCount {
   system: string;
@@ -229,13 +230,21 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
       return true;
     };
     // §4 boundary rule: a long, unmarked, citation-free paragraph after a
-    // multi-note cluster usually ENDS the cluster — do not merge it. Length
-    // is one input among several, never the sole decision; long genuine
-    // notes are still allowed as numbered starts.
-    const isLongProse = (t: string): boolean =>
-      t.length > 400 && detectReferenceSignals(t).score === 0;
+    // multi-note cluster usually ENDS the cluster — do not merge it. Length is
+    // one input among several, never the sole decision: the cutoff is the max
+    // of 400 chars and 3x the median of the current cluster's note lengths.
+    const clusterThreshold = (lengths: number[]): number => {
+      if (lengths.length < 2) {
+        return 400;
+      }
+      const sorted = [...lengths].sort((a, b) => a - b);
+      return Math.max(400, 3 * sorted[Math.floor(sorted.length / 2)]);
+    };
+    const isLongProse = (t: string, threshold: number): boolean =>
+      t.length > threshold && detectReferenceSignals(t).score === 0;
     let lastBlockIdx = -2;
     let numberedStarts = 0;
+    let clusterLengths: number[] = [];
     for (let i = 0; i < count; i++) {
       if (separatorFound && i <= separatorIndex) {
         continue;
@@ -251,6 +260,9 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
         }
       }
       if (m) {
+        if (i - lastBlockIdx > 1) {
+          clusterLengths = [];
+        }
         const blockText = m[2].trim();
         blocks.push({
           number: parseInt(m[1], 10),
@@ -262,28 +274,31 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
         });
         lastBlockIdx = i;
         numberedStarts++;
+        clusterLengths.push(blockText.length);
       } else if (
         t.trim() !== "" &&
         lastBlockIdx === i - 1 &&
         hygienic(i) &&
-        !(numberedStarts >= 2 && isLongProse(t.trim()))
+        !(numberedStarts >= 2 && isLongProse(t.trim(), clusterThreshold(clusterLengths)))
       ) {
         blocks[blocks.length - 1].text += ` ${t.trim()}`;
         blocks[blocks.length - 1].span = (blocks[blocks.length - 1].span ?? 1) + 1;
         lastBlockIdx = i;
+        clusterLengths.push(t.trim().length);
       }
     }
 
     // Structural heuristic: a footnote is rarely followed by a large body
     // paragraph — except on single-footnote pages, where the rule is skipped.
-    // Threshold documented: next paragraph over 400 chars.
+    // Same calibrated cutoff over all block lengths.
+    const globalThreshold = clusterThreshold(blocks.map((b) => b.text.length));
     if (blocks.length > 1) {
       for (const block of blocks) {
         if (block.paragraphIndex < 0) {
           continue;
         }
         const next = texts[block.paragraphIndex + 1];
-        block.followedByLarge = next !== undefined && next.length > 400;
+        block.followedByLarge = next !== undefined && next.length > globalThreshold;
       }
     }
     // Recompute signals on final (continuation-merged) text.
@@ -358,13 +373,23 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
         sig.systems.length * 25 + shorthand.length * 10 + (sig.hasYear ? 5 : 0) + (sig.hasIbid ? 10 : 0)
       );
       block.contradictions = contradictions;
-      // Long explanatory notes are allowed; flag possible prose-merge for review.
-      block.mergedSuspect = block.text.length > 1000;
+      // Long explanatory notes are allowed; flag possible prose-merge for review
+      // (merge candidate: body marker mid-paragraph + citation tail). Never
+      // auto-split; the split offset is a review proposal only.
+      const merge =
+        block.paragraphIndex >= 0 ? detectMergeCandidate(texts[block.paragraphIndex]) : { suspect: false, splitAt: -1 };
+      block.mergedSuspect = block.text.length > 1000 || merge.suspect;
+      if (merge.suspect) {
+        block.mergedSplitAt = merge.splitAt;
+        contradictions.push("possible body/note merge — review before converting");
+      }
       block.boundaryUncertain = block.followedByLarge === true;
     });
 
+    // Mixed native+flattened (§6 rule): drop evidence-gated native leading run.
+    // (Applied here so every downstream consumer sees consistent markers.)
     return {
-      markers,
+      markers: excludeNativeLeadingMarkers(markers, existingFootnotes),
       blocks,
       separatorFound,
       separatorIndex,

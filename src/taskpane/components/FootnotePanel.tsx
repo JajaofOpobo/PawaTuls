@@ -100,8 +100,7 @@ export function FootnotePanel({ setError }: FootnotePanelProps): React.JSX.Eleme
         setError(result.error ?? "Conversion failed.");
       } else {
         setConversionResult(result.data);
-      }
-    } finally {
+      }    } finally {
       setConverting(false);
     }
   }
@@ -157,6 +156,17 @@ export function FootnotePanel({ setError }: FootnotePanelProps): React.JSX.Eleme
       <div>
         <Toaster toasterId={TOASTER_ID} />
         <p>Converted {conversionResult.converted} footnote(s) successfully.</p>
+        <p>One undo unit (Ctrl+Z) reverts the whole batch.</p>
+        {conversionResult.insertions.length > 0 && (
+          <ul>
+            {conversionResult.insertions.map((entry, i) => (
+              <li key={i}>
+                marker {entry.markerNumber} (¶{entry.markerParagraphIndex}) → note
+                from ¶{entry.blockParagraphIndex}
+              </li>
+            ))}
+          </ul>
+        )}
         {conversionResult.failed > 0 && (
           <div>
             <p>{conversionResult.failed} failed:</p>

@@ -44,7 +44,7 @@ export interface CitationSummary {
 const PATTERNS: { system: CitationSystem; re: RegExp }[] = [
   {
     system: "Nigerian Law Reports",
-    re: /\[\d{4}\]\s*(?:\d+\s+)?(?:NWLR|LPELR|SCNJ|FWLR|NLR|ANLR|NSCC|UILR|JELR)\b|\bLPELR-\d+\([A-Za-z]+\)/gi,
+    re: /\[\d{4}\]\s*(?:\d+\s+)?(?:NWLR|LPELR|SCNJ|FWLR|NLR|ANLR|NSCC|UILR|JELR)\b|\bLPELR-\d+\([A-Za-z]+\)|\blpelr\.com\b/gi,
   },
   {
     system: "Statutes",
@@ -135,6 +135,9 @@ export interface ReferenceSignals {
   hasYear: boolean;
   hasEtAl: boolean;
   hasIbid: boolean;
+  hasReporter: boolean;
+  hasSuitNumber: boolean;
+  hasPerJ: boolean;
   systems: CitationSystem[];
   score: number;
 }
@@ -144,13 +147,54 @@ export function detectReferenceSignals(text: string): ReferenceSignals {
   const hasYear = /(1[5-9]\d{2}|20\d{2})/.test(text);
   const hasEtAl = /\bet\s+al\.?/i.test(text);
   const hasIbid = /\b(ibid\.?|ibidem|id\.|idem|op\.\s*cit\.|loc\.\s*cit\.|supra|infra|cf\.|see also)\b/i.test(text);
+  // Nigerian-context signals (structure-independent): reporter abbreviations
+  // alone, suit-number patterns (FCT/HC/CV/2024), Per J./JSC judgment quotes.
+  const hasReporter = /\b(NWLR|LPELR|SCNJ|FWLR|NLR|ANLR|NSCC|UILR|JELR)\b/.test(text);
+  const hasSuitNumber = /\b[A-Z]{2,}(?:\/[A-Z0-9]+){2,}/.test(text);
+  const hasPerJ = /\bPer\s+[A-Z][a-zA-Z'’-]+\s+(J|JSC|JCA)\.?/i.test(text) || /\b[A-Z][a-zA-Z'’-]+\s+(J|JSC|JCA)\s+in\b/i.test(text);
   return {
     hasYear,
     hasEtAl,
     hasIbid,
+    hasReporter,
+    hasSuitNumber,
+    hasPerJ,
     systems,
-    score: systems.length + (hasYear ? 1 : 0) + (hasEtAl ? 1 : 0) + (hasIbid ? 1 : 0),
+    score:
+      systems.length +
+      (hasYear ? 1 : 0) +
+      (hasEtAl ? 1 : 0) +
+      (hasIbid ? 1 : 0) +
+      (hasReporter ? 1 : 0) +
+      (hasSuitNumber ? 1 : 0) +
+      (hasPerJ ? 1 : 0),
   };
+}
+
+/**
+ * Merge-candidate detection (pure): a paragraph containing a body marker
+ * (superscript digit run, bracketed or parenthetical number) NOT at position 0
+ * followed later in the same paragraph by citation-like content. Returns the
+ * suspect flag plus the proposed split point (end offset of the marker) — the
+ * caller flags for review and never auto-splits.
+ */
+export function detectMergeCandidate(text: string): { suspect: boolean; splitAt: number } {
+  // Short numbers only (≤3 digits, no leading zero): four-digit years are
+  // never treated as embedded markers.
+  const re = /(^|\s)([1-9]\d{0,2}|\[[1-9]\d{0,2}\]|\([1-9]\d{0,2}\))\s+(?=\S)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const markerEnd = m.index + m[0].length;
+    // Skip a leading label ("1. See …" starts the note; it is not embedded).
+    if (m.index === 0) {
+      continue;
+    }
+    const tail = text.substring(markerEnd);
+    if (detectReferenceSignals(tail).score > 0 && text.length > 300) {
+      return { suspect: true, splitAt: markerEnd };
+    }
+  }
+  return { suspect: false, splitAt: -1 };
 }
 
 /**

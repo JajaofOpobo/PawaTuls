@@ -2430,3 +2430,30 @@ Custom `PawaTuls.Tab` (renders after built-in tabs) with Formatting group
 `ExecuteFunction` calls (failures silent by design — use pane buttons for
 reported runs). Manifest 1.1.0.0 — re-sideload (`npm start`) to pick it up.
 Resource IDs capped at 23 chars (schema limit 32).
+
+### Review adjudications (Claude input — accepted unless noted)
+
+1. **Thresholds defined:** independent = different evidence tier (EVIDENCE_MODEL
+   reviewPolicy); needs-review minimum = 2 supporting cues without Tier A
+   linkage (provisional, calibratable); boundary cutoff = max(400 chars, 3×
+   median of cluster note lengths).
+2. **Global assignment specified:** greedy per-number matching with order
+   alignment + human backtracking (duplicates/conflicts surface unchecked).
+   Hungarian rejected on record: marker numbers are near-unique keys, so global
+   optimization adds nothing once duplicates go to review.
+3. **Merge detection specified:** same-paragraph body marker (short numbers
+   only — years excluded) + citation tail + 300-char floor → MergeCandidate
+   with proposed split offset; never auto-split.
+4. **Block-selection UI:** mechanism (a) — select in the document body, confirm
+   via task-pane button ("Use Selection as Footnote Area"). Already built (41).
+5. **Gap decay:** gap of 1 in runs of 8+ markers → −5; gap of 3+ caps the whole
+   run at needs-review with an explicit contradiction.
+6. **Mixed native+flattened:** evidence-gated disambiguation — duplicated 1..k
+   leading superscript run is dropped as native; otherwise everything stays for
+   review. Numbers are matched internally, never against the doc footnote count.
+7. **Nigerian Tier B:** LPELR URLs, bare reporter abbreviations, suit-number
+   patterns, Per J./JSC quotes as structure-independent signals.
+8. **No doc duplication:** EVIDENCE_MODEL + types are the single system.
+9. **Undo path:** every conversion runs in one Word.run (single Ctrl+Z unit);
+   ConversionResult.insertions logs each insertion + source removed (revert UI
+   deferred, log written as specified).

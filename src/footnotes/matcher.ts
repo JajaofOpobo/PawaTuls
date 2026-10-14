@@ -19,7 +19,7 @@ import {
  * cue patterns live in citations.ts.
  */
 export const EVIDENCE_MODEL = {
-  version: "1.0",
+  version: "1.1",
   thresholds: { high: 70, medium: 40 },
   weights: {
     separatorRegion: 25, // Tier A/C: block in plausible note region (or no separator)
@@ -31,8 +31,53 @@ export const EVIDENCE_MODEL = {
     sequenceContinuity: 10, // Tier A: marker run aligns with block run
     bibliographyContradiction: -30, // §3 hard negative
     genericContradiction: -15, // §3 other explicit counter-evidence
+    gapSmall: -5, // gap of 1 in a run of 8+ markers: small modifier
+    gapLargeCap: 69, // gap of 3+: whole run needs review
+  },
+  // Review policy: "needs review" = at least two supporting cues without Tier A
+  // linkage. "Independent" always means evidence from a different tier —
+  // two Tier B signals from one paragraph are one corroboration, not two.
+  // High-confidence proposals still require per-match user approval.
+  reviewPolicy: {
+    needsReviewMinCues: 2,
+    independentMeans: "different evidence tier",
   },
 };
+
+/**
+ * Pure: mixed native+flattened disambiguation. Native footnote references are
+ * superscript numbers too, so when genuine footnotes exist AND a 1..k leading
+ * run is duplicated later (conflict signature), the leading run is the native
+ * one — drop it, keep the flattened run. Without duplication evidence, keep
+ * everything for human review.
+ */
+export function excludeNativeLeadingMarkers(
+  markers: FootnoteMarker[],
+  existingFootnotes: number
+): FootnoteMarker[] {
+  if (existingFootnotes <= 0) {
+    return markers;
+  }
+  const byNumber = new Map<number, number[]>();
+  markers.forEach((m, i) => {
+    if (m.pattern === "superscript") {
+      const list = byNumber.get(m.number) ?? [];
+      list.push(i);
+      byNumber.set(m.number, list);
+    }
+  });
+  const drop = new Set<number>();
+  for (let n = 1; n <= existingFootnotes; n++) {
+    const idx = byNumber.get(n);
+    if (idx !== undefined && idx.length >= 2) {
+      drop.add(idx[0]);
+    }
+  }
+  if (drop.size === 0) {
+    return markers;
+  }
+  return markers.filter((_, i) => !drop.has(i));
+}
 
 export function buildMatchTable(
   markers: FootnoteMarker[],
@@ -52,6 +97,15 @@ export function buildMatchTable(
   let seq = 0;
   // Tier A sequence continuity: markers in document order vs block numbers.
   const orderedMarkers = [...markers].sort((a, b) => a.paragraphIndex - b.paragraphIndex);
+  // Gap decay: a gap of 1 in a run of 8+ markers is a small modifier; a gap
+  // of 3+ makes every assignment in the run needs-review regardless.
+  const uniqueNumbers = [...new Set(orderedMarkers.map((m) => m.number))].sort((a, b) => a - b);
+  let maxGap = 0;
+  for (let i = 1; i < uniqueNumbers.length; i++) {
+    maxGap = Math.max(maxGap, uniqueNumbers[i] - uniqueNumbers[i - 1] - 1);
+  }
+  const gapSmall = maxGap === 1 && uniqueNumbers.length >= 8;
+  const gapLarge = maxGap >= 3;
   for (const marker of orderedMarkers) {
     const candidates = blocksByNumber.get(marker.number) ?? [];
     if (candidates.length === 0) {
@@ -85,6 +139,13 @@ export function buildMatchTable(
           ? `${candidates.length} blocks share number ${marker.number}`
           : `repeat reference to note ${marker.number}`
       );
+    }
+    if (gapLarge) {
+      cap = Math.min(cap, EVIDENCE_MODEL.weights.gapLargeCap);
+      contradictions.push(`marker sequence has a gap of ${maxGap} — whole run needs review`);
+    } else if (gapSmall) {
+      score += EVIDENCE_MODEL.weights.gapSmall;
+      evidence.push("single-number gap in a long run");
     }
     if (first.citationDense === true) {
       cap = Math.min(cap, EVIDENCE_MODEL.weights.citationDenseCap);
