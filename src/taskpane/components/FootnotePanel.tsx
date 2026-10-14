@@ -24,6 +24,7 @@ import {
   removeFootnotes,
 } from "../../footnotes/notes";
 import { ConversionResult, FootnoteMatch, ScanResult } from "../../shared/types";
+import { useConfirm } from "./shared/ConfirmDialog";
 
 export interface FootnotePanelProps {
   setError: (e: string | null) => void;
@@ -62,18 +63,6 @@ export function FootnotePanel({ setError }: FootnotePanelProps): React.JSX.Eleme
     setScanResult(null);
     setMatches([]);
     setConversionResult(null);
-  }
-
-  async function runCount(
-    op: Promise<{ data?: number; error?: string }>,
-    noun: string
-  ): Promise<void> {
-    const result = await op;
-    if (result.error) {
-      setError(result.error);
-    } else {
-      notify(`${result.data ?? 0} ${noun}`);
-    }
   }
 
   async function handleScan(): Promise<void> {
@@ -325,6 +314,7 @@ function ManageNotes({
   setError: (e: string | null) => void;
   notify: (title: string) => void;
 }): React.JSX.Element {
+  const { confirm, dialog } = useConfirm();
   async function runCount(
     op: Promise<{ data?: number; error?: string }>,
     noun: string
@@ -336,17 +326,47 @@ function ManageNotes({
       notify(`${result.data ?? 0} ${noun}`);
     }
   }
+  function confirmRun(message: string, op: () => Promise<{ data?: number; error?: string }>, noun: string): void {
+    void confirm(message).then((ok) => {
+      if (ok) {
+        void runCount(op(), noun);
+      }
+    });
+  }
   return (
     <div>
+      {dialog}
       <h3>Manage Notes</h3>
-      <Button onClick={() => void runCount(removeFootnotes(), "footnote(s) removed")}>
+      <Button
+        onClick={() =>
+          void confirmRun(
+            "Remove ALL genuine footnotes in the document? This cannot be undone selectively.",
+            () => removeFootnotes(),
+            "footnote(s) removed"
+          )
+        }
+      >
         Remove Footnotes
       </Button>
-      <Button onClick={() => void runCount(removeEndnotes(), "endnote(s) removed")}>
+      <Button
+        onClick={() =>
+          void confirmRun(
+            "Remove ALL genuine endnotes in the document? This cannot be undone selectively.",
+            () => removeEndnotes(),
+            "endnote(s) removed"
+          )
+        }
+      >
         Remove Endnotes
       </Button>
       <Button
-        onClick={() => void runCount(convertEndnoteToText(), "endnote(s) converted to text")}
+        onClick={() =>
+          void confirmRun(
+            "Convert ALL endnotes to plain text at the document end?",
+            () => convertEndnoteToText(),
+            "endnote(s) converted to text"
+          )
+        }
       >
         Endnote → Text
       </Button>

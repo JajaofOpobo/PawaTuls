@@ -77,6 +77,7 @@ import {
   NumberedParagraph,
   NumberingRepairPlan,
 } from "../../shared/types";
+import { useConfirm } from "./shared/ConfirmDialog";
 import { collapseMultipleSpaces, superscriptOrdinals, transformCase } from "../../formatting/text";
 import {
   lineBreaksToParagraphMarks,
@@ -156,6 +157,8 @@ const TOASTER_ID = "formatting-toaster";
 
 export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.Element {
   const { dispatchToast } = useToastController(TOASTER_ID);
+  const { confirm, dialog } = useConfirm();
+  const [busy, setBusy] = useState(false);
   const [underlineOn, setUnderlineOn] = useState(false);
   const [alignment, setAlignment] = useState<Alignment>("left");
   const [spacingRule, setSpacingRule] = useState<LineSpacingRule>("single");
@@ -188,9 +191,14 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
   }
 
   async function run(op: Promise<{ error?: string }>): Promise<void> {
-    const result = await op;
-    if (result.error) {
-      setError(result.error);
+    setBusy(true);
+    try {
+      const result = await op;
+      if (result.error) {
+        setError(result.error);
+      }
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -198,12 +206,29 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
     op: Promise<{ data?: number; error?: string }>,
     noun: string
   ): Promise<void> {
-    const result = await op;
-    if (result.error) {
-      setError(result.error);
-    } else {
-      notify(`${result.data ?? 0} ${noun}`);
+    setBusy(true);
+    try {
+      const result = await op;
+      if (result.error) {
+        setError(result.error);
+      } else {
+        notify(`${result.data ?? 0} ${noun}`);
+      }
+    } finally {
+      setBusy(false);
     }
+  }
+
+  function confirmRun(
+    message: string,
+    op: () => Promise<{ data?: number; error?: string }>,
+    noun: string
+  ): void {
+    void confirm(message).then((ok) => {
+      if (ok) {
+        void runCount(op(), noun);
+      }
+    });
   }
 
   async function runSelect(
@@ -235,6 +260,8 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
   return (
     <div>
       <Toaster toasterId={TOASTER_ID} />
+      {dialog}
+      <fieldset disabled={busy} style={{ border: "none", margin: 0, padding: 0 }}>
       <Accordion multiple collapsible>
         <AccordionItem value="font">
           <AccordionHeader>Font</AccordionHeader>
@@ -661,67 +688,67 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
           <AccordionPanel>
             <h4>Breaks</h4>
             <div>
-              <Button onClick={() => void runCount(removePageBreaks(), "page break(s) removed")}>
+              <Button onClick={() => void confirmRun("Remove all page breaks in the document?", () => removePageBreaks(), "page break(s) removed")}>
                 Page Breaks
               </Button>
-              <Button onClick={() => void runCount(removeColumnBreaks(), "column break(s) removed")}>
+              <Button onClick={() => void confirmRun("Remove all column breaks in the document?", () => removeColumnBreaks(), "column break(s) removed")}>
                 Column Breaks
               </Button>
-              <Button onClick={() => void runCount(removeSectionBreaks(), "section break(s) removed")}>
+              <Button onClick={() => void confirmRun("Remove all section breaks? Sections will merge into the previous section.", () => removeSectionBreaks(), "section break(s) removed")}>
                 Section Breaks
               </Button>
-              <Button onClick={() => void runCount(removeAllBreaks(), "break(s) removed")}>
+              <Button onClick={() => void confirmRun("Remove all page, column and section breaks? Sections will merge.", () => removeAllBreaks(), "break(s) removed")}>
                 All Breaks
               </Button>
             </div>
             <h4>Hidden &amp; Marks</h4>
             <div>
-              <Button onClick={() => void runCount(removeHiddenText(), "hidden run(s) removed")}>
+              <Button onClick={() => void confirmRun("Delete all hidden text in the document?", () => removeHiddenText(), "hidden run(s) removed")}>
                 Hidden Text
               </Button>
-              <Button onClick={() => void runCount(removeDropCap(), "drop cap(s) removed")}>
+              <Button onClick={() => void confirmRun("Remove all drop caps?", () => removeDropCap(), "drop cap(s) removed")}>
                 Drop Caps
               </Button>
-              <Button onClick={() => void runCount(removeFrames(), "frame(s) removed")}>
+              <Button onClick={() => void confirmRun("Remove all frames?", () => removeFrames(), "frame(s) removed")}>
                 Frames
               </Button>
-              <Button onClick={() => void runCount(removeEmptyLines(), "line run(s) collapsed")}>
+              <Button onClick={() => void confirmRun("Collapse all repeated manual line breaks?", () => removeEmptyLines(), "line run(s) collapsed")}>
                 Empty Lines
               </Button>
-              <Button onClick={() => void runCount(tabToSpace(), "paragraph(s) detabbed")}>
+              <Button onClick={() => void confirmRun("Convert all tabs to spaces in the document?", () => tabToSpace(), "paragraph(s) detabbed")}>
                 Tabs → Spaces
               </Button>
             </div>
             <h4>Tables &amp; Objects</h4>
             <div>
-              <Button onClick={() => void runCount(removeTables(), "table(s) removed")}>
+              <Button onClick={() => void confirmRun("Delete all tables including their content?", () => removeTables(), "table(s) removed")}>
                 Tables
               </Button>
-              <Button onClick={() => void runCount(removeEmptyTableRows(), "empty row(s) removed")}>
+              <Button onClick={() => void confirmRun("Delete all wholly-empty table rows?", () => removeEmptyTableRows(), "empty row(s) removed")}>
                 Empty Rows
               </Button>
-              <Button onClick={() => void runCount(removeEmptyTableColumns(), "empty column(s) removed")}>
+              <Button onClick={() => void confirmRun("Delete all wholly-empty table columns?", () => removeEmptyTableColumns(), "empty column(s) removed")}>
                 Empty Cols
               </Button>
-              <Button onClick={() => void runCount(removePictures(), "picture(s) removed")}>
+              <Button onClick={() => void confirmRun("Delete all pictures in the document?", () => removePictures(), "picture(s) removed")}>
                 Pictures
               </Button>
-              <Button onClick={() => void runCount(removeTextBoxes(), "text box(es) removed")}>
+              <Button onClick={() => void confirmRun("Delete all text boxes including their content?", () => removeTextBoxes(), "text box(es) removed")}>
                 Text Boxes
               </Button>
-              <Button onClick={() => void runCount(removeContentControls(), "control(s) removed")}>
+              <Button onClick={() => void confirmRun("Remove all content controls (text is kept)?", () => removeContentControls(), "control(s) removed")}>
                 Controls
               </Button>
             </div>
             <h4>References</h4>
             <div>
-              <Button onClick={() => void runCount(removeComments(), "comment(s) removed")}>
+              <Button onClick={() => void confirmRun("Delete all comments in the document?", () => removeComments(), "comment(s) removed")}>
                 Comments
               </Button>
-              <Button onClick={() => void runCount(removeHyperlinks(), "hyperlink(s) removed")}>
+              <Button onClick={() => void confirmRun("Remove all hyperlinks (display text is kept)?", () => removeHyperlinks(), "hyperlink(s) removed")}>
                 Hyperlinks
               </Button>
-              <Button onClick={() => void runCount(removeBookmarks(), "bookmark(s) removed")}>
+              <Button onClick={() => void confirmRun("Delete all bookmarks in the document?", () => removeBookmarks(), "bookmark(s) removed")}>
                 Bookmarks
               </Button>
             </div>
@@ -801,6 +828,7 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
+      </fieldset>
     </div>
   );
 }

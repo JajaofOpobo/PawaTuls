@@ -127,6 +127,8 @@ export async function controlWidows(
       applyTo === "selection"
         ? await getSelectionParagraphsOrThrow(context)
         : context.document.body.paragraphs;
+    paragraphs.load("text");
+    await context.sync();
     for (const para of paragraphs.items) {
       await setKeepFlags(context, para, undefined, undefined, true);
     }

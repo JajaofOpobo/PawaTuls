@@ -20,10 +20,14 @@ async function rewriteParagraphs(
   applyTo: RemovalScope,
   transform: (xml: string) => { xml: string; count: number }
 ): Promise<number> {
+  // NOTE: collection items must be loaded before use — unloaded access yields
+  // an empty array and the op would silently no-op on document scope.
   const paragraphs =
     applyTo === "selection"
       ? await getSelectionParagraphsOrThrow(context)
       : context.document.body.paragraphs;
+  paragraphs.load("text");
+  await context.sync();
   const ooxmls = paragraphs.items.map((p) => p.getOoxml());
   await context.sync();
   let total = 0;
@@ -223,6 +227,9 @@ export async function removeEmptyTableRows(): Promise<{ data?: number; error?: s
 }
 
 export async function removeEmptyTableColumns(): Promise<{ data?: number; error?: string }> {
+  // TableRow.values is a 2D array with one entry per row: values[0][c] is the
+  // text of column c. (Treating values.length as the column count only ever
+  // evaluated column 0 — fixed.)
   return safeWordRun(async (context) => {
     const tables = context.document.body.tables;
     tables.load("items");
@@ -235,14 +242,19 @@ export async function removeEmptyTableColumns(): Promise<{ data?: number; error?
       if (rows.items.length === 0) {
         continue;
       }
-      const colCount = Math.min(...rows.items.map((r) => r.values.length));
+      const colCount = Math.min(
+        ...rows.items.map((r) => (r.values[0] ?? []).length)
+      );
+      if (colCount === 0) {
+        continue;
+      }
       const firstCells = rows.items[0].cells;
       firstCells.load("items");
       await context.sync();
       for (let c = Math.min(colCount, firstCells.items.length) - 1; c >= 0; c--) {
         const allEmpty = rows.items.every((row) => {
-          const rowValues = row.values[c] ?? [];
-          return rowValues.every((cell) => cell.trim() === "");
+          const cells = row.values[0] ?? [];
+          return (cells[c] ?? "").trim() === "";
         });
         if (allEmpty) {
           firstCells.items[c].deleteColumn();

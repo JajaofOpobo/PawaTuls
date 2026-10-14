@@ -1,12 +1,18 @@
 # Phase 29 Test Report — PawaTuls v1 (legal suspended)
 
 Word build/bitness: recorded at manual-test time below.
-`tsc --noEmit`: clean (per-commit, CI-equivalent).
-`npm run build`: emits complete current `dist/` (taskpane.js minimized) but the
-Node process crashes post-emit in a minifier worker thread (exit 1, twice,
-2026-10-14) — environmental flake under investigation (dev server resident at
-the time); not a code error. Sideloading uses `webpack serve` and is unaffected.
-Retry with the dev server stopped if a clean exit code is needed.
+`tsc --noEmit`: clean (per-commit; use `node --max-old-space-size=8192` prefix —
+default-heap tsc OOMs on the office-js typings in this shell).
+`npm test`: 19 suites pass (tests/smoke.js, real assertions over transpiled
+pure modules — citations, matcher, converter helpers, numbering, profiles,
+ordinal + run-preserving rewrites).
+`npm run lint`: clean (flat `eslint.config.js`; v9 ignores `.eslintrc.json`).
+`npm run build`: green via `npm.cmd` (the `npm.ps1` shim flakes with
+"Object reference" errors). Fixed along the way: ts-loader `transpileOnly`
+(type-check lives in tsc/test), Terser `parallel: 2` (explicit dep), dev HTTPS
+certs + source maps dev-only. Earlier post-emit worker crashes were
+environmental (9GB+ free throughout); dist/ output was always complete.
+Use `npm.cmd` if `npm.ps1` misbehaves.
 
 ## Automated (ran 2026-10-14, no Word required)
 

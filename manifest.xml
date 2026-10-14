@@ -40,34 +40,7 @@
           </GetStarted>
           <FunctionFile resid="Commands.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-            <OfficeTab id="TabHome">
-              <Group id="CommandsGroup">
-                <Label resid="CommandsGroup.Label" />
-                <Icon>
-                  <bt:Image size="16" resid="Icon.16x16" />
-                  <bt:Image size="32" resid="Icon.32x32" />
-                  <bt:Image size="80" resid="Icon.80x80" />
-                </Icon>
-                <Control xsi:type="Button" id="TaskpaneButton">
-                  <Label resid="TaskpaneButton.Label" />
-                  <Supertip>
-                    <Title resid="TaskpaneButton.Label" />
-                    <Description resid="TaskpaneButton.Tooltip" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>ButtonId1</TaskpaneId>
-                    <SourceLocation resid="Taskpane.Url" />
-                  </Action>
-                </Control>
-              </Group>
-            </OfficeTab>
-            <!-- Custom PawaTuls tab: custom tabs render after all built-in tabs. -->
-            <OfficeTab id="PawaTuls.Tab">
+            <CustomTab id="PawaTuls.Tab">
               <Group id="PawaTuls.FormatGroup">
                 <Label resid="PT.FormatGroup.Label" />
                 <Icon>
@@ -175,38 +148,25 @@
                     <SourceLocation resid="PT.FootnotesUrl" />
                   </Action>
                 </Control>
-                <Control xsi:type="Button" id="PawaTuls.RemoveFootnotesButton">
-                  <Label resid="PT.RemNotes.Label" />
+                <Control xsi:type="Button" id="PawaTuls.ManageNotesButton">
+                  <Label resid="PT.ManageNotes.Label" />
                   <Supertip>
-                    <Title resid="PT.RemNotes.Label" />
-                    <Description resid="PT.RemNotes.Tip" />
+                    <Title resid="PT.ManageNotes.Label" />
+                    <Description resid="PT.ManageNotes.Tip" />
                   </Supertip>
                   <Icon>
                     <bt:Image size="16" resid="Icon.16x16" />
                     <bt:Image size="32" resid="Icon.32x32" />
                     <bt:Image size="80" resid="Icon.80x80" />
                   </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>removeFootnotesQuick</FunctionName>
-                  </Action>
-                </Control>
-                <Control xsi:type="Button" id="PawaTuls.EndnoteToTextButton">
-                  <Label resid="PT.EndToText.Label" />
-                  <Supertip>
-                    <Title resid="PT.EndToText.Label" />
-                    <Description resid="PT.EndToText.Tip" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                  <Action xsi:type="ExecuteFunction">
-                    <FunctionName>convertEndnoteToTextQuick</FunctionName>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>FootnotePane</TaskpaneId>
+                    <SourceLocation resid="PT.FootnotesUrl" />
                   </Action>
                 </Control>
               </Group>
-            </OfficeTab>
+              <Label resid="PT.Tab.Label" />
+            </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
       </Host>
@@ -226,8 +186,7 @@
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="PawaTuls has loaded. Click the PawaTuls button to open the task pane." />
-        <bt:String id="CommandsGroup.Label" DefaultValue="PawaTuls" />
-        <bt:String id="TaskpaneButton.Label" DefaultValue="Show PawaTuls" />
+        <bt:String id="PT.Tab.Label" DefaultValue="PawaTuls" />
         <bt:String id="PT.FormatGroup.Label" DefaultValue="Formatting" />
         <bt:String id="PT.FootnoteGroup.Label" DefaultValue="Footnotes" />
         <bt:String id="PT.FormatPane.Label" DefaultValue="Format Pane" />
@@ -236,20 +195,17 @@
         <bt:String id="PT.EmptyParas.Label" DefaultValue="Empty Paras" />
         <bt:String id="PT.Ordinals.Label" DefaultValue="Ordinals" />
         <bt:String id="PT.FootPane.Label" DefaultValue="Footnotes Pane" />
-        <bt:String id="PT.RemNotes.Label" DefaultValue="Remove Notes" />
-        <bt:String id="PT.EndToText.Label" DefaultValue="Endnote→Text" />
+        <bt:String id="PT.ManageNotes.Label" DefaultValue="Manage Notes" />
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="Formatting, Nigerian legal workflows, and footnote detection for Word." />
-        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Open the PawaTuls task pane." />
         <bt:String id="PT.FormatPane.Tip" DefaultValue="Open the Format panel." />
         <bt:String id="PT.Bold.Tip" DefaultValue="Toggle bold on the selection." />
         <bt:String id="PT.ClearAll.Tip" DefaultValue="Clear all formatting on the selection." />
         <bt:String id="PT.EmptyParas.Tip" DefaultValue="Remove empty paragraphs from the document." />
         <bt:String id="PT.Ordinals.Tip" DefaultValue="Superscript ordinal suffixes (1st, 2nd) in the selection." />
         <bt:String id="PT.FootPane.Tip" DefaultValue="Open the Footnotes panel." />
-        <bt:String id="PT.RemNotes.Tip" DefaultValue="Remove all genuine footnotes. Cannot be undone selectively — confirm first." />
-        <bt:String id="PT.EndToText.Tip" DefaultValue="Convert all endnotes to plain text at the document end." />
+        <bt:String id="PT.ManageNotes.Tip" DefaultValue="Open note management (remove/convert with confirmation)." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

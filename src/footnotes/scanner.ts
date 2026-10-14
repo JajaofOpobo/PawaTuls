@@ -256,6 +256,7 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
           number: parseInt(m[1], 10),
           text: blockText,
           paragraphIndex: i,
+          span: 1,
           citationDense: denseSet.has(i),
           referenceSignals: detectReferenceSignals(blockText).score > 0,
         });
@@ -268,6 +269,7 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
         !(numberedStarts >= 2 && isLongProse(t.trim()))
       ) {
         blocks[blocks.length - 1].text += ` ${t.trim()}`;
+        blocks[blocks.length - 1].span = (blocks[blocks.length - 1].span ?? 1) + 1;
         lastBlockIdx = i;
       }
     }
@@ -408,11 +410,13 @@ export async function scanSelectionBlocks(): Promise<{
           number: parseInt(m[1], 10),
           text: m[2].trim(),
           paragraphIndex: -1,
+          span: 1,
           citationDense: false,
         });
         prevContinues = true;
       } else if (t.trim() !== "" && blocks.length > 0 && prevContinues) {
         blocks[blocks.length - 1].text += ` ${t.trim()}`;
+        blocks[blocks.length - 1].span = (blocks[blocks.length - 1].span ?? 1) + 1;
         prevContinues = true;
       } else {
         prevContinues = false;

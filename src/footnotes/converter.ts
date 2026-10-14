@@ -36,16 +36,53 @@ function literalFor(match: FootnoteMatch): string {
 }
 
 /**
+ * Pure: resolve which paragraph holds a marker at conversion time. Prefers the
+ * scan-time paragraph index, then ±5 neighbours, then a full sweep — but only
+ * accepts paragraphs containing the literal AND whatever context survives
+ * (up to 40 chars each side). Returns -1 when unverifiable.
+ */
+export function resolveMarkerParagraph(texts: string[], match: FootnoteMatch): number {
+  const lit = literalFor(match);
+  const before = match.marker.contextBefore.slice(-40);
+  const after = match.marker.contextAfter.slice(0, 40);
+  const fits = (t: string): boolean =>
+    t.includes(lit) &&
+    (before === "" || t.includes(before)) &&
+    (after === "" || t.includes(after));
+  const hint = match.marker.paragraphIndex;
+  if (hint >= 0 && hint < texts.length && fits(texts[hint])) {
+    return hint;
+  }
+  if (hint >= 0) {
+    for (let d = 1; d <= 5; d++) {
+      if (hint - d >= 0 && hint - d < texts.length && fits(texts[hint - d])) {
+        return hint - d;
+      }
+      if (hint + d < texts.length && fits(texts[hint + d])) {
+        return hint + d;
+      }
+    }
+  }
+  for (let i = 0; i < texts.length; i++) {
+    if (fits(texts[i])) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/**
  * Pure helper shared by the converter and deleteFootnoteBlocks: locate block
  * paragraphs in a paragraph-text array. Matches by number prefix plus a content
- * probe (first 30 chars) so continuation-merged text still resolves.
- * Returns descending paragraph indices.
+ * probe (first 30 chars) so continuation-merged text still resolves. Includes
+ * the full span (starter + continuations) so multi-paragraph blocks are fully
+ * removed — never just the starter. Returns descending paragraph indices.
  */
 export function findBlockParagraphIndices(texts: string[], blocks: FootnoteBlock[]): number[] {
   const starters = [/^\s*\[(\d+)\]/, /^\s*(\d+)[.)]/, /^\s*(\d+)\s{2,}/];
+  const stripPrefix = /^\s*(?:\[\d+\]|\d+[.)]|\d+\s{2,})\s*/;
   const found: number[] = [];
   for (const block of blocks) {
-    const probe = block.text.substring(0, Math.min(30, block.text.length));
     for (let i = 0; i < texts.length; i++) {
       const t = texts[i];
       let num = -1;
@@ -56,10 +93,20 @@ export function findBlockParagraphIndices(texts: string[], blocks: FootnoteBlock
           break;
         }
       }
-      if (num === block.number && (probe === "" || t.includes(probe))) {
-        found.push(i);
-        break;
+      if (num !== block.number) {
+        continue;
       }
+      // The starter paragraph's own content must open the (possibly
+      // continuation-merged) block text — never match on merged tail text.
+      const content = t.replace(stripPrefix, "");
+      if (content !== "" && !block.text.startsWith(content.substring(0, Math.min(20, content.length)))) {
+        continue;
+      }
+      const span = Math.max(1, block.span ?? 1);
+      for (let k = 0; k < span && i + k < texts.length; k++) {
+        found.push(i + k);
+      }
+      break;
     }
   }
   return [...new Set(found)].sort((a, b) => b - a);
@@ -75,31 +122,61 @@ async function convertMatches(
   return safeWordRun(async (context) => {
     const body = context.document.body;
 
-    // Phase A — locate each accepted marker by fresh literal search and swap
-    // in a unique placeholder. All searches are queued first and resolved with
-    // one sync (no mutations yet, so ranges stay valid); ordinal consumption
-    // per (pattern, number) keeps document order stable. No inserts happen yet
-    // so later searches are never polluted by new footnote references.
-    const searches: { match: FootnoteMatch; hits: Word.RangeCollection }[] = [];
+    // Relocate markers by paragraph-index hint + context verification — never
+    // bare body-wide literal search (that hits ordinary numbers, legal
+    // paragraph numbers, citation years, or block numbers before the marker).
+    const scanParas = body.paragraphs;
+    scanParas.load("text");
+    const notes = body.footnotes;
+    notes.load("items");
+    await context.sync();
+    const scanTexts = scanParas.items.map((p) => p.text);
+    const beforeCount = notes.items.length;
+
+    // Phase A — paragraph-scoped literal searches (batched), superscript
+    // hits verified as superscript, ordinal consumption per paragraph so
+    // repeats resolve in document order. No mutations yet.
+    interface SearchEntry {
+      match: FootnoteMatch;
+      paraIndex: number;
+      hits: Word.RangeCollection;
+    }
+    const searches: SearchEntry[] = [];
+    const located: { match: FootnoteMatch; paraIndex: number }[] = [];
+    let failed = 0;
     for (const match of matches) {
-      const hits = body.search(literalFor(match));
-      hits.load("text");
-      searches.push({ match, hits });
+      const paraIndex = resolveMarkerParagraph(scanTexts, match);
+      if (paraIndex < 0) {
+        failed++;
+        errors.push(
+          `Marker ${match.marker.number} (${match.marker.pattern}): location unverifiable on re-scan; skipped with source intact.`
+        );
+        continue;
+      }
+      located.push({ match, paraIndex });
+    }
+    for (const entry of located) {
+      const hits = scanParas.items[entry.paraIndex].search(literalFor(entry.match));
+      hits.load("text, font/superscript");
+      searches.push({ match: entry.match, hits: hits, paraIndex: entry.paraIndex });
     }
     await context.sync();
 
     const consumed = new Map<string, number>();
     const swaps: { match: FootnoteMatch; slot: number }[] = [];
-    let failed = 0;
     for (const entry of searches) {
-      const key = `${entry.match.marker.pattern}:${entry.match.marker.number}`;
+      const lit = literalFor(entry.match);
+      let candidates = entry.hits.items.filter((h) => h.text === lit);
+      if (entry.match.marker.pattern === "superscript") {
+        candidates = candidates.filter((h) => h.font.superscript === true);
+      }
+      const key = `${entry.paraIndex}:${entry.match.marker.pattern}:${entry.match.marker.number}`;
       const at = consumed.get(key) ?? 0;
       consumed.set(key, at + 1);
-      const candidates = entry.hits.items.filter((h) => h.text === literalFor(entry.match));
       if (at >= candidates.length) {
         failed++;
         errors.push(
-          `Marker ${entry.match.marker.number} (${entry.match.marker.pattern}): not found on re-scan; skipped.`
+          `Marker ${entry.match.marker.number} (${entry.match.marker.pattern}): not found in verified paragraph; skipped with source intact.`
         );
         continue;
       }
@@ -109,56 +186,72 @@ async function convertMatches(
     }
     await context.sync();
 
-    // Phase B — replace placeholders with genuine footnotes, then verify.
-    const notes = body.footnotes;
-    notes.load("items");
-    await context.sync();
-    const beforeCount = notes.items.length;
+    // Phase B — placeholders → genuine footnotes with per-swap rollback: any
+    // swap that cannot convert gets its original marker literal restored, so
+    // failed conversions never leave private placeholders behind.
+    const rollback = async (pending: { match: FootnoteMatch; slot: number }[]): Promise<void> => {
+      for (const p of pending) {
+        const hits = body.search(placeholder(p.slot));
+        hits.load("text");
+        await context.sync();
+        for (const h of hits.items) {
+          h.insertText(literalFor(p.match), Word.InsertLocation.replace);
+        }
+      }
+      await context.sync();
+    };
 
     const inserted: { match: FootnoteMatch }[] = [];
-    const phSearches: { swap: { match: FootnoteMatch; slot: number }; hits: Word.RangeCollection }[] = [];
     for (const swap of swaps) {
       const hits = body.search(placeholder(swap.slot));
       hits.load("text");
-      phSearches.push({ swap, hits });
-    }
-    await context.sync();
-    for (const entry of phSearches) {
-      if (entry.hits.items.length !== 1) {
+      await context.sync();
+      if (hits.items.length !== 1) {
+        await rollback([swap]);
         failed++;
         errors.push(
-          `Marker ${entry.swap.match.marker.number}: placeholder not uniquely re-located; skipped.`
+          `Marker ${swap.match.marker.number}: placeholder not uniquely re-located; marker restored, skipped.`
         );
         continue;
       }
-      const target = entry.hits.items[0];
-      target.delete();
-      target.insertFootnote(entry.swap.match.block.text);
-      inserted.push({ match: entry.swap.match });
+      const target = hits.items[0];
+      try {
+        target.delete();
+        target.insertFootnote(swap.match.block.text);
+        await context.sync();
+        inserted.push({ match: swap.match });
+      } catch (err) {
+        await rollback([swap]);
+        failed++;
+        errors.push(
+          `Marker ${swap.match.marker.number}: conversion failed (${
+            err instanceof Error ? err.message : String(err)
+          }); marker restored, skipped.`
+        );
+      }
     }
-    await context.sync();
     notes.load("items");
     await context.sync();
     const created = notes.items.length - beforeCount;
     if (created !== inserted.length) {
       errors.push(
         `Verification failed: expected ${inserted.length} new footnote(s), found ${created}. ` +
-          `Block source paragraphs left intact.`
+          `Block source paragraphs left intact; review the document before retrying.`
       );
       return { converted: 0, failed: failed + inserted.length, errors };
     }
 
     // Phase C — delete original block paragraphs (re-located, descending).
-    const paras = body.paragraphs;
-    paras.load("text");
+    const delParas = body.paragraphs;
+    delParas.load("text");
     await context.sync();
-    const texts = paras.items.map((p) => p.text);
+    const delTexts = delParas.items.map((p) => p.text);
     const indices = findBlockParagraphIndices(
-      texts,
+      delTexts,
       inserted.map((x) => x.match.block)
     );
     for (const idx of indices) {
-      paras.items[idx].delete();
+      delParas.items[idx].delete();
     }
     await context.sync();
 

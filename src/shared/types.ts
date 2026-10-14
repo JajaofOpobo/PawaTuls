@@ -129,6 +129,9 @@ export interface FootnoteBlock {
   number: number;
   text: string;
   paragraphIndex: number;
+  /** Paragraph span: 1 + continuation paragraphs merged at scan. Deletion
+   * removes the whole span, not just the starter (multi-para fix). */
+  span?: number;
   citationDense?: boolean;   // paragraph matches a citation system (Appendix J)
   referenceSignals?: boolean; // text carries reference/citation signals (App. J)
   followedByLarge?: boolean;  // next paragraph is much larger (Appendix J)

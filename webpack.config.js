@@ -3,6 +3,7 @@
 const devCerts = require("office-addin-dev-certs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const webpack = require("webpack");
 
 const urlDev = "https://localhost:3000/";
@@ -16,7 +17,9 @@ async function getHttpsOptions() {
 module.exports = async (env, options) => {
   const dev = options.mode === "development";
   const config = {
-    devtool: "source-map",
+    // Full source maps in dev only: prod maps double peak memory and the
+    // production minify workers crash under constrained heaps (see TEST_REPORT).
+    devtool: dev ? "source-map" : false,
     entry: {
       polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
       taskpane: "./src/taskpane/index.tsx",
@@ -33,7 +36,9 @@ module.exports = async (env, options) => {
         {
           test: /\.tsx?$/,
           exclude: /node_modules/,
-          use: "ts-loader",
+          // Type-checking happens via `npx tsc --noEmit` / `npm test`;
+          // the bundler only transpiles (memory + speed).
+          use: [{ loader: "ts-loader", options: { transpileOnly: true } }],
         },
         {
           test: /\.css$/,
@@ -87,7 +92,18 @@ module.exports = async (env, options) => {
         Promise: ["es6-promise", "Promise"],
       }),
     ],
-    devServer: {
+    // Cap minifier workers: full parallelism OOMs on constrained machines
+    // (observed post-emit worker crash with the dev server resident).
+    optimization: {
+      minimizer: [new TerserPlugin({ parallel: 2 })],
+    },
+  };
+
+  // Dev-only concerns stay out of production builds: HTTPS cert access and
+  // the devServer block are attached only when serving.
+  const isServe = process.argv.some((arg) => arg.includes("serve"));
+  if (isServe) {
+    config.devServer = {
       server: {
         type: "https",
         options: await getHttpsOptions(),
@@ -99,8 +115,8 @@ module.exports = async (env, options) => {
       static: {
         directory: __dirname,
       },
-    },
-  };
+    };
+  }
 
   return config;
 };

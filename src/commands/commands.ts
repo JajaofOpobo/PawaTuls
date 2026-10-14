@@ -4,7 +4,6 @@ import { toggleBold } from "../formatting/font";
 import { clearFormatting } from "../formatting/clear";
 import { removeEmptyParagraphs } from "../formatting/paragraph";
 import { superscriptOrdinals } from "../formatting/text";
-import { convertEndnoteToText, removeFootnotes } from "../footnotes/notes";
 
 Office.onReady(() => {
   // Commands function file loaded. Ribbon quick actions below run headless:
@@ -38,17 +37,7 @@ function superscriptOrdinalsQuick(event: Office.AddinCommands.Event): void {
   void complete(event, superscriptOrdinals("selection"));
 }
 
-function removeFootnotesQuick(event: Office.AddinCommands.Event): void {
-  void complete(event, removeFootnotes());
-}
-
-function convertEndnoteToTextQuick(event: Office.AddinCommands.Event): void {
-  void complete(event, convertEndnoteToText());
-}
-
 Office.actions.associate("toggleBoldQuick", toggleBoldQuick);
 Office.actions.associate("clearAllFormattingQuick", clearAllFormattingQuick);
 Office.actions.associate("removeEmptyParagraphsQuick", removeEmptyParagraphsQuick);
 Office.actions.associate("superscriptOrdinalsQuick", superscriptOrdinalsQuick);
-Office.actions.associate("removeFootnotesQuick", removeFootnotesQuick);
-Office.actions.associate("convertEndnoteToTextQuick", convertEndnoteToTextQuick);
