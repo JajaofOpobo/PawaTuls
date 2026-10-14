@@ -92,16 +92,19 @@ async function setKeepFlags(
   context: Word.RequestContext,
   para: Word.Paragraph,
   keepNext?: boolean,
-  keepLines?: boolean
+  keepLines?: boolean,
+  widowControl?: boolean
 ): Promise<void> {
   const ooxml = para.getOoxml();
   await context.sync();
   let updated = ooxml.value
     .replace(/<w:keepNext[^/]*\/>/g, "")
-    .replace(/<w:keepLines[^/]*\/>/g, "");
+    .replace(/<w:keepLines[^/]*\/>/g, "")
+    .replace(/<w:widowControl[^/]*\/>/g, "");
   let insert = "";
   if (keepNext === true) insert += "<w:keepNext/>";
   if (keepLines === true) insert += "<w:keepLines/>";
+  if (widowControl === true) insert += "<w:widowControl/>";
   if (insert !== "") {
     if (!/<w:pPr[\s>]/.test(updated)) {
       throw new Error("Could not locate paragraph properties to set keep options.");
@@ -109,6 +112,26 @@ async function setKeepFlags(
     updated = updated.replace(/(<w:pPr[^>]*>)/, `$1${insert}`);
   }
   para.insertOoxml(updated, Word.InsertLocation.replace);
+}
+
+/**
+ * Safe replacement for KuTools' AdjustParagraphEnd font-shrink heuristic
+ * (rejected as buggy, AUDIT.md #10): enables Word's native widow/orphan
+ * control instead of shrinking fonts.
+ */
+export async function controlWidows(
+  applyTo: "selection" | "document" = "selection"
+): Promise<{ error?: string }> {
+  return safeWordRun(async (context) => {
+    const paragraphs =
+      applyTo === "selection"
+        ? await getSelectionParagraphsOrThrow(context)
+        : context.document.body.paragraphs;
+    for (const para of paragraphs.items) {
+      await setKeepFlags(context, para, undefined, undefined, true);
+    }
+    await context.sync();
+  });
 }
 
 export async function setLineSpacing(

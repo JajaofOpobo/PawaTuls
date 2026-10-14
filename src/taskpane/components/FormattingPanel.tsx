@@ -91,6 +91,12 @@ import {
   selectTables,
   SelectResult,
 } from "../../formatting/select";
+import { controlWidows } from "../../formatting/paragraph";
+import {
+  convertTableToText,
+  repeatHeaderRows,
+  resizeImages,
+} from "../../formatting/tables";
 import { clearFormatting } from "../../formatting/clear";
 import { CaseTransform, LineSpacingRule } from "../../shared/types";
 
@@ -160,6 +166,9 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
   const [importText, setImportText] = useState("");
   const [captionKind, setCaptionKind] = useState<"table" | "figure" | "equation">("table");
   const [captionLabel, setCaptionLabel] = useState("");
+  const [tableSeparator, setTableSeparator] = useState<"tab" | "paragraph" | "comma">("tab");
+  const [repeatHeaders, setRepeatHeaders] = useState(true);
+  const [resizePercent, setResizePercent] = useState(100);
   const [numberScope, setNumberScope] = useState<"selection" | "document">("selection");
   const [numberItems, setNumberItems] = useState<NumberedParagraph[]>([]);
   const [numberIssues, setNumberIssues] = useState<NumberingIssue[]>([]);
@@ -736,6 +745,58 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
             </Button>
             <Button onClick={() => void runSelect(selectPictures(), "picture(s)")}>
               Pictures
+            </Button>
+          </AccordionPanel>
+        </AccordionItem>
+
+        <AccordionItem value="tables-pictures">
+          <AccordionHeader>Tables &amp; Pictures</AccordionHeader>
+          <AccordionPanel>
+            <Dropdown
+              value={tableSeparator}
+              selectedOptions={[tableSeparator]}
+              aria-label="Table to text separator"
+              onOptionSelect={(_, data) => {
+                if (data.optionValue) {
+                  setTableSeparator(data.optionValue as "tab" | "paragraph" | "comma");
+                }
+              }}
+            >
+              <Option value="tab">Tab</Option>
+              <Option value="paragraph">Paragraph</Option>
+              <Option value="comma">Comma</Option>
+            </Dropdown>
+            <Button
+              onClick={() => void runCount(convertTableToText(tableSeparator), "table(s) converted")}
+            >
+              Table → Text
+            </Button>
+            <ToggleButton
+              checked={repeatHeaders}
+              onClick={() => {
+                const next = !repeatHeaders;
+                setRepeatHeaders(next);
+                void run(repeatHeaderRows(next));
+              }}
+            >
+              Repeat Header Rows
+            </ToggleButton>
+            <SpinButton
+              defaultValue={100}
+              min={10}
+              max={400}
+              aria-label="Image size percent"
+              onChange={(_, data) => {
+                if (data.value != null) setResizePercent(data.value);
+              }}
+            />
+            <Button
+              onClick={() => void runCount(resizeImages(resizePercent), "image(s) resized")}
+            >
+              Resize Images
+            </Button>
+            <Button onClick={() => void run(controlWidows("selection"))}>
+              Widow Control
             </Button>
           </AccordionPanel>
         </AccordionItem>

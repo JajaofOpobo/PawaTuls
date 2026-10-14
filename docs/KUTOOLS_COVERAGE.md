@@ -42,7 +42,7 @@ decision) · **unsupported** (no Office.js API).
 | Numbering audit + preview-first repair | phased (Phases 33–34, v1 merge) |
 | Resize images 25–200% / to selection | phased (Phase 40) |
 | Repeat header rows across pages | phased (Phase 40) |
-| Table diagonal header | phased (Phase 40) |
+| Table diagonal header | unsupported (no diagonal border location, no cell OOXML access) |
 | Insert table / figure / equation captions, refresh, convert-to-caption | phased (Phase 38) |
 | Select tables / empty paras / headings / short paras / pictures (select-first + count) | phased (Phase 39) |
 | Select pages (current/odd/even/range) | unsupported: Office.js exposes no page model |

@@ -185,32 +185,16 @@ export async function removeTextBoxes(
 }
 
 export async function removeTables(): Promise<{ data?: number; error?: string }> {
-  // Word.Table exposes no delete(); remove whole <w:tbl> elements from the
-  // body OOXML instead. Nested tables are stripped innermost-first.
   return safeWordRun(async (context) => {
-    const body = context.document.body;
-    const tables = body.tables;
+    const tables = context.document.body.tables;
     tables.load("items");
     await context.sync();
-    if (tables.items.length === 0) {
-      return 0;
+    const items = tables.items.slice().reverse();
+    for (const table of items) {
+      table.delete();
     }
-    const range = body.getRange();
-    const ooxml = range.getOoxml();
     await context.sync();
-    let xml = ooxml.value;
-    let removed = 0;
-    for (let depth = 0; depth < 20; depth++) {
-      const before = xml;
-      xml = xml.replace(/<w:tbl\b(?:(?!<w:tbl\b)[\s\S])*?<\/w:tbl>/g, "");
-      if (xml === before) {
-        break;
-      }
-      removed++;
-    }
-    range.insertOoxml(xml, Word.InsertLocation.replace);
-    await context.sync();
-    return tables.items.length;
+    return items.length;
   });
 }
 

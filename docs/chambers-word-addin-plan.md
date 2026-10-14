@@ -2322,9 +2322,10 @@ Create `src/formatting/tables.ts`:
 - `repeatHeaderRows(enable = true): Promise<{ error?: string }>`
   Sets `table.headerRowCount = enable ? 1 : 0` on selected tables.
 - `insertTableDiagonalHeader(type: "down" | "up"): Promise<{ error?: string }>`
-  Adds a diagonal border to the first cell of the first row of selected tables
-  via OOXML (`w:tcBorders` diagonal element — verify tag against the installed
-  build); error if the selection holds no table.
+  DROPPED (unsupported): true diagonal borders have no Office.js path —
+  `BorderLocation` has no diagonal member and `TableCell` exposes no OOXML
+  access, so the border cannot be injected at cell precision. See
+  `docs/KUTOOLS_COVERAGE.md`.
 - `resizeImages(percent: number): Promise<{ data?: number; error?: string }>`
   Scales every inline picture's width/height by `percent/100` (validate 10–400,
   honor `lockAspectRatio`); returns count.
