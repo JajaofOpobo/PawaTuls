@@ -2468,3 +2468,26 @@ in descending order; (c) any block that cannot be re-located aborts its own
 deletion with an explicit error (source left in body, never silently kept or
 duplicated); (d) the footnote-count gate runs before any deletion; (e) reruns
 convert nothing new (idempotent).
+
+---
+
+## APPENDIX K: RIBBON-FIRST UX (NO TASK PANES)
+
+Decision: PawaTuls lives in its ribbon tab (KuTools-like arrangement,
+independent implementation). Task panes are out — the task pane is a slim
+launcher fallback (manifest requires a SourceLocation).
+
+- **CustomTab `PawaTuls.Tab`** (manifest): groups Format / Insert / Select /
+  Profiles / Footnotes, mirroring the KuTools menu arrangement (Select, Insert,
+  Adjust, Remove, Convert, Tables, Captions, Hyperlink groups) with our own
+  commands. Menus hold one-click **non-destructive** actions only
+  (formatting, selects, inserts, builtin profiles); destructive whole-document
+  operations live in dialogs with confirmation and are never headless ribbon
+  actions. All 36 function names cross-checked manifest↔commands.
+- **Dialogs** (`src/dialogs/`, `displayDialogAsync`): `footnote-dialog`
+  (full FootnotePanel: scan/review/manage) and `tools-dialog` (full
+  FormattingPanel: all sections incl. numbering audit, profiles, remove with
+  confirms). Same components, same validation, local error banners.
+- Scan-failure hardening: step-labeled scan phases (banner names the step) +
+  canonical whole-object font loads (nav-path collection loads proved
+  unreliable across builds).

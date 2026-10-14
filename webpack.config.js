@@ -24,6 +24,8 @@ module.exports = async (env, options) => {
       polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
       taskpane: "./src/taskpane/index.tsx",
       commands: "./src/commands/commands.ts",
+      "footnote-dialog": "./src/dialogs/footnote-dialog.tsx",
+      "tools-dialog": "./src/dialogs/tools-dialog.tsx",
     },
     output: {
       clean: true,
@@ -68,6 +70,16 @@ module.exports = async (env, options) => {
         filename: "commands.html",
         template: "./src/commands/commands.html",
         chunks: ["polyfill", "commands"],
+      }),
+      new HtmlWebpackPlugin({
+        filename: "footnote-dialog.html",
+        template: "./src/dialogs/footnote-dialog.html",
+        chunks: ["polyfill", "footnote-dialog"],
+      }),
+      new HtmlWebpackPlugin({
+        filename: "tools-dialog.html",
+        template: "./src/dialogs/tools-dialog.html",
+        chunks: ["polyfill", "tools-dialog"],
       }),
       new CopyWebpackPlugin({
         patterns: [

@@ -78,6 +78,15 @@ function pushMarker(
 
 export async function scanDocument(): Promise<{ data?: ScanData; error?: string }> {
   const scanStartTime = Date.now();
+  // Step-labeled phases: any failure surfaces WHICH step failed (not just the
+  // Office error), so the banner pinpoints the cause on the user's build.
+  const step = async <T>(name: string, fn: () => Promise<T>): Promise<T> => {
+    try {
+      return await fn();
+    } catch (err) {
+      throw new Error(`scan [${name}]: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  };
   return safeWordRun(async (context) => {
     const body = context.document.body;
 
@@ -85,7 +94,7 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
     notes.load("items");
     const paras = body.paragraphs;
     paras.load("text, style, firstLineIndent, leftIndent");
-    await context.sync();
+    await step("load paragraphs", () => context.sync());
 
     const existingFootnotes = notes.items.length;
     const texts = paras.items.map((p) => p.text);
@@ -107,7 +116,7 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
     });
     const fonts = paras.items.map((p) => {
       const f = p.font;
-      f.load("size");
+      f.load();
       return f;
     });
 
@@ -124,7 +133,10 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
     const jobs: Job[] = [];
     for (let i = 0; i < count; i++) {
       const para = paras.items[i];
-      const sup = para.search("[0-9]@", { matchWildcards: true });      sup.load("text, font/superscript");
+      const sup = para.search("[0-9]@", { matchWildcards: true });
+      // Whole-object font load (canonical collection pattern — nav-path
+      // loads like "font/superscript" are unreliable across builds).
+      sup.load("text, font");
       jobs.push({ index: i, pattern: "superscript", results: sup });
       const br = para.search("\\[[0-9]@\\]", { matchWildcards: true });
       br.load("text");
@@ -133,7 +145,7 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
       par.load("text");
       jobs.push({ index: i, pattern: "parenthetical", results: par });
     }
-    await context.sync();
+    await step("marker searches", () => context.sync());
 
     const markers: FootnoteMarker[] = [];
     const cursors = new Map<string, number>();

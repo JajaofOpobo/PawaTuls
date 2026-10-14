@@ -1,37 +1,33 @@
-import React, { useState } from "react";
-import { FluentProvider, Tab, TabList, webLightTheme } from "@fluentui/react-components";
-import { ErrorBanner } from "./shared/ErrorBanner";
-import { FormattingPanel } from "./FormattingPanel";
-import { FootnotePanel } from "./FootnotePanel";
+import React from "react";
+import { Button, FluentProvider, webLightTheme } from "@fluentui/react-components";
 
-type ActiveTab = "format" | "footnotes";
+/* global Office */
 
-function initialTab(): ActiveTab {
-  try {
-    const tab = new URLSearchParams(window.location.search).get("tab");
-    return tab === "footnotes" ? "footnotes" : "format";
-  } catch {
-    return "format";
-  }
+/**
+ * Fallback launcher page. PawaTuls lives in the ribbon tab (menus + dialogs);
+ * this page remains because the manifest requires a task pane source location.
+ */
+function openDialog(url: string): void {
+  Office.context.ui.displayDialogAsync(url, { height: 70, width: 45 });
 }
 
 export function App(): React.JSX.Element {
-  const [activeTab, setActiveTab] = useState<ActiveTab>(initialTab);
-  const [error, setError] = useState<string | null>(null);
-
   return (
     <FluentProvider theme={webLightTheme}>
-      <ErrorBanner message={error} onDismiss={() => setError(null)} />
-      <TabList
-        selectedValue={activeTab}
-        onTabSelect={(_, data) => setActiveTab(data.value as ActiveTab)}
-      >
-        <Tab value="format">Format</Tab>
-        <Tab value="footnotes">Footnotes</Tab>
-      </TabList>
-      <div className="taskpane-panels">
-        {activeTab === "format" && <FormattingPanel setError={setError} />}
-        {activeTab === "footnotes" && <FootnotePanel setError={setError} />}
+      <div>
+        <h2>PawaTuls</h2>
+        <p>Use the PawaTuls tab on the ribbon. You can also open the dialogs here:</p>
+        <Button
+          appearance="primary"
+          onClick={() => openDialog("https://localhost:3000/tools-dialog.html")}
+        >
+          Open Formatting Tools
+        </Button>
+        <Button
+          onClick={() => openDialog("https://localhost:3000/footnote-dialog.html")}
+        >
+          Open Footnote Review
+        </Button>
       </div>
     </FluentProvider>
   );
