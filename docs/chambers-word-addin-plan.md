@@ -2258,11 +2258,11 @@ Create `src/footnotes/notes.ts` (verified APIs: `body.footnotes`/`endnotes`
   collection (selection scope = notes whose reference is inside the selection
   range — verify `NoteItem.reference` at build; else document-scope only with
   panel note).
-- `convertFootnoteToEndnote()`: KuTools parity — transcribe note text to new
-  endnotes then backward-delete (verify richer `FormattedText`-style transfer
-  at build; plain-text transfer is acceptable parity with a documented limit).
-- `convertEndnoteToText()`: transcribe numbered text to document end (forward),
-  backward-delete references/markers (KuTools parity, upright markers).
+- `convertEndnoteToText()`: transcribe numbered text (actual reference numbers,
+  not loop indices) then backward-delete (KuTools parity minus its bugs).
+- `convertFootnoteToEndnote` is DROPPED (unsupported): Office.js has no
+  endnote-insert API (`insertFootnote` creates footnotes only; OOXML insert
+  cannot add the endnotes part). See `docs/KUTOOLS_COVERAGE.md`.
 
 Extend `FootnotePanel.tsx` with a **Manage Notes** section: four buttons with
 counts + confirms; conversion buttons note the plain-text limitation. `tsc` passes.

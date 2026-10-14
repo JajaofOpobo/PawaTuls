@@ -139,6 +139,7 @@ export interface ScanResult {
   totalMarkersFound: number;
   totalBlocksFound: number;
   scanDurationMs: number;
+  existingFootnotes: number;   // genuine Word footnotes present (Appendix G)
 }
 
 export interface ConversionResult {

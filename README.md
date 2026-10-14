@@ -54,6 +54,10 @@ npm run build    # production build → dist/
 - [ ] Live Word check — run `npm start`, confirm 3 tabs (manual, Phase 4/9 completion test)
 - [x] Phases 1–3, 6 — KuTools decompilation → `decompilation/api-map.md` + `integration-notes.md` (unblocks Phases 10/11/13/15)
 - [ ] Phases 10–30 — feature modules, panels, testing, packaging (next: Phase 10 font module)
+- Suspended for this version: Phases 17–24 (legal modules + LegalPanel). The Legal
+  tab is hidden in `App.tsx`; `LegalPanel.tsx` stub retained. Re-enable by
+  restoring the tab and building Phases 17–24 per plan + Appendix H.
+- [x] Phases 25–28, 37 — footnote scanner/matcher/converter/panel + note management
 - [ ] Phases 10–30 — feature modules, panels, testing, packaging
 
 Note: `tsconfig.json` intentionally has no `noEmit` (webpack `ts-loader` needs emit;

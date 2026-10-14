@@ -35,7 +35,7 @@ decision) · **unsupported** (no Office.js API).
 | Remove hyperlinks, keep text | phased (Phase 35) |
 | Remove bookmarks | phased (Phase 35) |
 | Remove footnotes / endnotes | phased (Phase 37) |
-| Footnote → endnote, endnote → text | phased (Phase 37, KuTools-parity transfer) |
+| Footnote → endnote, endnote → text | endnote → text phased (Phase 37); footnote → endnote unsupported (no endnote-insert API) |
 | Adjust paragraph end (font-shrink heuristic) | parity-note: heuristic rejected as buggy (AUDIT.md #10); safe replacement `controlWidows` phased (Phase 40) |
 | Clear formatting (individual resets) | covered (Phase 15) |
 | Formatting profiles (versioned, import/export, preview) | phased (Phases 31–32, v1 merge) |
