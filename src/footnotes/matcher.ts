@@ -40,6 +40,11 @@ export function buildMatchTable(
     if (candidates.length > 1 || occurrence > 1) {
       confidence = "medium";
     }
+    // Appendix J: citation-dense blocks (bibliographies, law-report lists) are
+    // never high-confidence — the text is likely not a footnote at all.
+    if (first.citationDense === true && confidence === "high") {
+      confidence = "medium";
+    }
     matches.push({
       id: `match-${marker.number}-${Date.now()}-${seq++}`,
       marker,
@@ -83,7 +88,8 @@ export function buildScanResult(
   separatorFound: boolean,
   separatorIndex: number,
   scanStartTime: number,
-  existingFootnotes = 0
+  existingFootnotes = 0,
+  citationSystems: { system: string; hits: number }[] = []
 ): ScanResult {
   const matches = buildMatchTable(markers, blocks, separatorFound, separatorIndex);
   return {
@@ -95,5 +101,6 @@ export function buildScanResult(
     totalBlocksFound: blocks.length,
     scanDurationMs: Date.now() - scanStartTime,
     existingFootnotes,
+    citationSystems,
   };
 }

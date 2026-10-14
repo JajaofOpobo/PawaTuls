@@ -46,6 +46,9 @@ decision) · **unsupported** (no Office.js API).
 | Insert table / figure / equation captions, refresh, convert-to-caption | phased (Phase 38) |
 | Select tables / empty paras / headings / short paras / pictures (select-first + count) | phased (Phase 39) |
 | Select pages (current/odd/even/range) | unsupported: Office.js exposes no page model |
+| Manual footnote-block area override | built (Phase 41, Appendix J) |
+| Citation-system identification + certainty/consistency | built (Phase 42, Appendix J) |
+| Ordinal superscripting (1st, 2nd …) | built (Phase 43, Appendix J) |
 | Remove macros (VBA) | unsupported: no Office API touches the VBA project |
 | Equation → image / image → equation | unsupported: no OMath API in Office.js |
 

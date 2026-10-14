@@ -119,6 +119,7 @@ export interface FootnoteBlock {
   number: number;
   text: string;
   paragraphIndex: number;
+  citationDense?: boolean;   // paragraph matches a citation system (Appendix J)
 }
 
 export type MatchConfidence = "high" | "medium" | "low";
@@ -140,6 +141,7 @@ export interface ScanResult {
   totalBlocksFound: number;
   scanDurationMs: number;
   existingFootnotes: number;   // genuine Word footnotes present (Appendix G)
+  citationSystems: { system: string; hits: number }[];   // Appendix J
 }
 
 export interface ConversionResult {

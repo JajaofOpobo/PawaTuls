@@ -36,7 +36,7 @@ import {
   toggleStrikethrough,
 } from "../../formatting/font";
 import { applyStyle, getAvailableStyles } from "../../formatting/styles";
-import { collapseMultipleSpaces, transformCase } from "../../formatting/text";
+import { collapseMultipleSpaces, superscriptOrdinals, transformCase } from "../../formatting/text";
 import {
   lineBreaksToParagraphMarks,
   paragraphMarksToLineBreaks,
@@ -344,6 +344,23 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
               ))}
             </div>
             <Button onClick={() => void run(collapseMultipleSpaces())}>Collapse spaces</Button>
+            <Button
+              onClick={() =>
+                void (async () => {
+                  const r = await superscriptOrdinals("selection");
+                  if (r.error) {
+                    setError(r.error);
+                  } else {
+                    notify(
+                      `${r.data?.changed ?? 0} ordinal(s) superscripted` +
+                        ((r.data?.skipped ?? 0) > 0 ? ` (${r.data?.skipped} skipped)` : "")
+                    );
+                  }
+                })()
+              }
+            >
+              Superscript ordinals (1st, 2nd…)
+            </Button>
             <Button
               onClick={() =>
                 void runCount(lineBreaksToParagraphMarks(), "line break(s) converted")

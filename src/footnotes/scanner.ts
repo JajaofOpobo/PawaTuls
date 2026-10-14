@@ -16,6 +16,12 @@
  */
 import { FootnoteBlock, FootnoteMarker, MarkerPattern } from "../shared/types";
 import { safeWordRun } from "../shared/wordUtils";
+import { detectCitationSystems } from "./citations";
+
+export interface CitationSystemCount {
+  system: string;
+  hits: number;
+}
 
 export interface ScanData {
   markers: FootnoteMarker[];
@@ -24,6 +30,17 @@ export interface ScanData {
   separatorIndex: number;
   scanStartTime: number;
   existingFootnotes: number;
+  citationSystems: CitationSystemCount[];
+}
+
+export interface ScanData {
+  markers: FootnoteMarker[];
+  blocks: FootnoteBlock[];
+  separatorFound: boolean;
+  separatorIndex: number;
+  scanStartTime: number;
+  existingFootnotes: number;
+  citationSystems: CitationSystemCount[];
 }
 
 const CONTEXT_CHARS = 80;
@@ -72,6 +89,11 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
     const existingFootnotes = notes.items.length;
     const texts = paras.items.map((p) => p.text);
     const count = paras.items.length;
+
+    // Appendix J: citation systems feed certainty (dense paragraphs are
+    // citation lists/bibliographies, not footnote blocks) and consistency.
+    const citation = detectCitationSystems(texts);
+    const denseSet = new Set(citation.denseParagraphs);
 
     interface Job {
       index: number;
@@ -185,7 +207,12 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
         }
       }
       if (m) {
-        blocks.push({ number: parseInt(m[1], 10), text: m[2].trim(), paragraphIndex: i });
+        blocks.push({
+          number: parseInt(m[1], 10),
+          text: m[2].trim(),
+          paragraphIndex: i,
+          citationDense: denseSet.has(i),
+        });
       } else if (
         t.trim() !== "" &&
         blocks.length > 0 &&
@@ -195,6 +222,63 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
       }
     }
 
-    return { markers, blocks, separatorFound, separatorIndex, scanStartTime, existingFootnotes };
+    return {
+      markers,
+      blocks,
+      separatorFound,
+      separatorIndex,
+      scanStartTime,
+      existingFootnotes,
+      citationSystems: citation.systems,
+    };
+  });
+}
+
+/**
+ * Manual block-area override (Appendix J): when auto-detection confidence is
+ * low, the user highlights the footnote block region and this parses the
+ * selected paragraphs as blocks (no separator needed). paragraphIndex is -1
+ * (unknown in body order) — matching is by number, conversion re-locates by
+ * text, so the flow still holds; confidence stays review-grade by design.
+ */
+export async function scanSelectionBlocks(): Promise<{
+  data?: FootnoteBlock[];
+  error?: string;
+}> {
+  return safeWordRun(async (context) => {
+    const paragraphs = context.document.getSelection().paragraphs;
+    paragraphs.load("text");
+    await context.sync();
+    if (paragraphs.items.length === 0) {
+      throw new Error("No text selected. Select the footnote block first.");
+    }
+    const blocks: FootnoteBlock[] = [];
+    const starters = [/^\s*\[(\d+)\]\s+(.+)$/, /^\s*(\d+)[.)]\s+(.+)$/, /^\s*(\d+)\s{2,}(.+)$/];
+    let prevContinues = false;
+    paragraphs.items.forEach((para) => {
+      const t = para.text;
+      let m: RegExpMatchArray | null = null;
+      for (const re of starters) {
+        m = t.match(re);
+        if (m) {
+          break;
+        }
+      }
+      if (m) {
+        blocks.push({
+          number: parseInt(m[1], 10),
+          text: m[2].trim(),
+          paragraphIndex: -1,
+          citationDense: false,
+        });
+        prevContinues = true;
+      } else if (t.trim() !== "" && blocks.length > 0 && prevContinues) {
+        blocks[blocks.length - 1].text += ` ${t.trim()}`;
+        prevContinues = true;
+      } else {
+        prevContinues = false;
+      }
+    });
+    return blocks;
   });
 }

@@ -2342,3 +2342,40 @@ control button. `tsc` passes.
 - [ ] All modules exist, `npx tsc --noEmit` passes
 - [ ] Every removal/conversion rerun reports 0 (R3)
 - [ ] Counts surface in UI; structural ops confirm first (R2)
+
+---
+
+## APPENDIX J: FOOTNOTE WORKFLOW EXTENSIONS (PHASES 41–43)
+
+### PHASE 41: MANUAL FOOTNOTE-BLOCK AREA OVERRIDE
+
+**Status: built.** When auto-detection confidence is low, the user highlights
+the footnote block region; `scanSelectionBlocks()` (`src/footnotes/scanner.ts`)
+parses selected paragraphs with the same block patterns (no separator needed,
+`paragraphIndex: -1`, continuation merging included). The panel rebuilds matches
+against the already-scanned markers via `buildScanResult` (medium-grade review
+by design — manual areas never claim high confidence). Conversion re-locates by
+text, so unknown indices hold through the flow.
+
+### PHASE 42: CITATION-SYSTEM IDENTIFICATION
+
+**Status: built (`src/footnotes/citations.ts`, pure).** Recognizes Nigerian Law
+Reports (NWLR/LPELR/SCNJ/FWLR/NLR/ANLR/NSCC/UILR/JELR), statutory citations,
+neutral court citations, academic-bracket references, and author–date.
+The scanner classifies every paragraph (`detectCitationSystems`), flags
+citation-dense blocks (`FootnoteBlock.citationDense`), reports system counts in
+`ScanResult.citationSystems`, and the matcher caps citation-dense matches at
+medium (bibliographies and law-report lists are never high-confidence footnote
+blocks). The panel lists detected systems and warns on mixed usage
+(consistency check). Verified by executed assertions (reporters, statutes,
+neutral, author–date, plain-text negative, dense indices, cap, conflicts).
+
+### PHASE 43: ORDINAL SUPERSCRIPTING
+
+**Status: built (`superscriptOrdinals` + pure `superscriptOrdinalsInOoxml` in
+`src/formatting/text.ts`, button in FormattingPanel).** Finds `\b\d+(st|nd|rd|th)\b`
+(1st, 2nd, 3rd … 200th) and superscripts only the suffix via per-paragraph OOXML
+run-splitting: original run properties are restored on continuing text,
+already-superscript runs are skipped, cross-run matches count as skipped.
+Returns `{ changed, skipped }`. Verified by executed assertions (split shape,
+format preservation, superscript skip, balanced XML).

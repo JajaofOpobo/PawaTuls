@@ -15,7 +15,7 @@ import {
   Toaster,
   useToastController,
 } from "@fluentui/react-components";
-import { scanDocument } from "../../footnotes/scanner";
+import { scanDocument, scanSelectionBlocks } from "../../footnotes/scanner";
 import { buildScanResult } from "../../footnotes/matcher";
 import { convertAcceptedMatches } from "../../footnotes/converter";
 import {
@@ -87,7 +87,7 @@ export function FootnotePanel({ setError }: FootnotePanelProps): React.JSX.Eleme
         const d = raw.data;
         const sr = buildScanResult(
           d.markers, d.blocks, d.separatorFound, d.separatorIndex,
-          d.scanStartTime, d.existingFootnotes
+          d.scanStartTime, d.existingFootnotes, d.citationSystems
         );
         setScanResult(sr);
         setMatches(sr.matches);
@@ -115,6 +115,43 @@ export function FootnotePanel({ setError }: FootnotePanelProps): React.JSX.Eleme
     } finally {
       setConverting(false);
     }
+  }
+
+  // Appendix J manual override: user highlights the footnote block area when
+  // auto-detection confidence is low; blocks are re-parsed from the selection
+  // and re-matched against the already-scanned markers.
+  async function handleUseSelectionAsBlocks(): Promise<void> {
+    if (!scanResult) {
+      return;
+    }
+    setError(null);
+    const raw = await scanSelectionBlocks();
+    if (raw.error || !raw.data) {
+      setError(raw.error ?? "Block scan failed.");
+      return;
+    }
+    if (raw.data.length === 0) {
+      setError("No numbered footnote blocks found in the selection.");
+      return;
+    }
+    const seen = new Set<string>();
+    const markers = [
+      ...scanResult.matches.map((m) => m.marker),
+      ...scanResult.unmatchedMarkers,
+    ].filter((m) => {
+      const key = `${m.number}:${m.paragraphIndex}:${m.pattern}`;
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+    const sr = buildScanResult(
+      markers, raw.data, false, -1, Date.now(), scanResult.existingFootnotes,
+      scanResult.citationSystems
+    );
+    setScanResult(sr);
+    setMatches(sr.matches);
   }
 
   function setAccepted(id: string, accepted: boolean): void {
@@ -161,6 +198,23 @@ export function FootnotePanel({ setError }: FootnotePanelProps): React.JSX.Eleme
             left untouched.
           </p>
         )}
+        {scanResult.citationSystems.length > 0 && (
+          <p>
+            Citation systems detected:{" "}
+            {scanResult.citationSystems.map((c) => `${c.system} (${c.hits})`).join(", ")}.
+            {scanResult.citationSystems.length > 1 &&
+              " Mixed systems — verify citation consistency."}{" "}
+            Citation-dense blocks are capped at medium confidence.
+          </p>
+        )}
+        <div>
+          <p>
+            Low confidence? Highlight the footnote block area in the document, then:
+          </p>
+          <Button onClick={() => void handleUseSelectionAsBlocks()}>
+            Use Selection as Footnote Area
+          </Button>
+        </div>
         {matches.length === 0 ? (
           <div>
             <p>No convertible footnotes found.</p>
