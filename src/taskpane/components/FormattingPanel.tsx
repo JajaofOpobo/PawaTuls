@@ -4,6 +4,7 @@ import {
   AccordionHeader,
   AccordionItem,
   AccordionPanel,
+  Badge,
   Button,
   Dropdown,
   Option,
@@ -45,7 +46,17 @@ import {
   exportProfile,
   importProfile,
 } from "../../formatting/profiles";
-import { FormattingProfile } from "../../shared/types";
+import {
+  applyRepairPlan,
+  auditNumbering,
+  previewRepair,
+} from "../../formatting/numbering";
+import {
+  FormattingProfile,
+  NumberingIssue,
+  NumberedParagraph,
+  NumberingRepairPlan,
+} from "../../shared/types";
 import { collapseMultipleSpaces, superscriptOrdinals, transformCase } from "../../formatting/text";
 import {
   lineBreaksToParagraphMarks,
@@ -118,6 +129,11 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
   const [selectedProfile, setSelectedProfile] = useState<string>(BUILTIN_PROFILES[0].id);
   const [profileScope, setProfileScope] = useState<"selection" | "document">("selection");
   const [importText, setImportText] = useState("");
+  const [numberScope, setNumberScope] = useState<"selection" | "document">("selection");
+  const [numberItems, setNumberItems] = useState<NumberedParagraph[]>([]);
+  const [numberIssues, setNumberIssues] = useState<NumberingIssue[]>([]);
+  const [repairPlan, setRepairPlan] = useState<NumberingRepairPlan | null>(null);
+  const [audited, setAudited] = useState(false);
 
   const activeProfile = profiles.find((p) => p.id === selectedProfile) ?? profiles[0];
 
@@ -464,6 +480,99 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
                 }
               })()}
             />
+          </AccordionPanel>
+        </AccordionItem>
+
+        <AccordionItem value="numbering">
+          <AccordionHeader>Numbering</AccordionHeader>
+          <AccordionPanel>
+            <RadioGroup
+              value={numberScope}
+              onChange={(_, data) => setNumberScope(data.value as "selection" | "document")}
+              layout="horizontal"
+            >
+              <Radio value="selection" label="Selection" />
+              <Radio value="document" label="Document" />
+            </RadioGroup>
+            <Button
+              onClick={() =>
+                void (async () => {
+                  const result = await auditNumbering(numberScope);
+                  if (result.error || !result.data) {
+                    setError(result.error ?? "Audit failed.");
+                    return;
+                  }
+                  setNumberItems(result.data.items);
+                  setNumberIssues(result.data.issues);
+                  setRepairPlan(null);
+                  setAudited(true);
+                })()
+              }
+            >
+              Audit Numbering
+            </Button>
+            {audited && (
+              <div>
+                <p>
+                  {numberItems.filter((i) => i.kind === "native").length} native,{" "}
+                  {numberItems.filter((i) => i.kind === "manual").length} manually
+                  numbered paragraph(s).
+                </p>
+                {numberIssues.length === 0 ? (
+                  <p>No numbering issues found.</p>
+                ) : (
+                  <ul>
+                    {numberIssues.map((issue, i) => (
+                      <li key={i}>
+                        <Badge
+                          appearance="filled"
+                          color={issue.issue === "mixed-style" || issue.issue === "orphan-level" ? "warning" : "danger"}
+                        >
+                          {issue.issue}
+                        </Badge>{" "}
+                        ¶{issue.paragraphIndex}: {issue.detail}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <Button
+                  onClick={() => {
+                    setRepairPlan(previewRepair(numberIssues, numberItems));
+                  }}
+                >
+                  Preview Repair
+                </Button>
+                {repairPlan !== null && (
+                  <div>
+                    {repairPlan.edits.length === 0 ? (
+                      <p>Nothing to repair (restarts and mixed styles need approval).</p>
+                    ) : (
+                      <ul>
+                        {repairPlan.edits.map((e, i) => (
+                          <li key={i}>
+                            ¶{e.paragraphIndex}: {e.before} → {e.after}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {repairPlan.edits.length > 0 && (
+                      <Button
+                        appearance="primary"
+                        onClick={() =>
+                          void runCount(
+                            applyRepairPlan(repairPlan, numberScope),
+                            "number(s) repaired"
+                          )
+                        }
+                      >
+                        Apply Repair
+                      </Button>
+                    )}
+                  </div>
+                )}
+                <p>Native lists are managed by Word — never edited by repair.</p>
+              </div>
+            )}
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
