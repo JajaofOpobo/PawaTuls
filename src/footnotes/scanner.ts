@@ -83,12 +83,26 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
     const notes = body.footnotes;
     notes.load("items");
     const paras = body.paragraphs;
-    paras.load("text");
+    paras.load("text, style");
     await context.sync();
 
     const existingFootnotes = notes.items.length;
     const texts = paras.items.map((p) => p.text);
     const count = paras.items.length;
+
+    // Stress-test lesson: body content (numbered headings, native-list items,
+    // table cells) must never become footnote blocks. Batch the membership
+    // checks with the marker searches below.
+    const listItems = paras.items.map((p) => {
+      const li = p.listItemOrNullObject;
+      context.load(li);
+      return li;
+    });
+    const parentTables = paras.items.map((p) => {
+      const t = p.parentTableOrNullObject;
+      context.load(t);
+      return t;
+    });
 
     // Appendix J: citation systems feed certainty (dense paragraphs are
     // citation lists/bibliographies, not footnote blocks) and consistency.
@@ -103,8 +117,7 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
     const jobs: Job[] = [];
     for (let i = 0; i < count; i++) {
       const para = paras.items[i];
-      const sup = para.search("[0-9]@", { matchWildcards: true });
-      sup.load("text, font/superscript");
+      const sup = para.search("[0-9]@", { matchWildcards: true });      sup.load("text, font/superscript");
       jobs.push({ index: i, pattern: "superscript", results: sup });
       const br = para.search("\\[[0-9]@\\]", { matchWildcards: true });
       br.load("text");
@@ -194,16 +207,34 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
 
     const blocks: FootnoteBlock[] = [];
     const starters = [/^\s*\[(\d+)\]\s+(.+)$/, /^\s*(\d+)[.)]\s+(.+)$/, /^\s*(\d+)\s{2,}(.+)$/];
+    // Hygiene gate: headings, native-list items, and table cells are body
+    // content, never footnote blocks. Non-hygienic paragraphs also break
+    // continuation chains so headings cannot merge into a previous block.
+    const hygienic = (i: number): boolean => {
+      if (String(paras.items[i].style).startsWith("Heading")) {
+        return false;
+      }
+      if (!listItems[i].isNullObject) {
+        return false;
+      }
+      if (!parentTables[i].isNullObject) {
+        return false;
+      }
+      return true;
+    };
+    let lastBlockIdx = -2;
     for (let i = 0; i < count; i++) {
       if (separatorFound && i <= separatorIndex) {
         continue;
       }
       const t = texts[i];
       let m: RegExpMatchArray | null = null;
-      for (const re of starters) {
-        m = t.match(re);
-        if (m) {
-          break;
+      if (hygienic(i)) {
+        for (const re of starters) {
+          m = t.match(re);
+          if (m) {
+            break;
+          }
         }
       }
       if (m) {
@@ -213,12 +244,10 @@ export async function scanDocument(): Promise<{ data?: ScanData; error?: string 
           paragraphIndex: i,
           citationDense: denseSet.has(i),
         });
-      } else if (
-        t.trim() !== "" &&
-        blocks.length > 0 &&
-        blocks[blocks.length - 1].paragraphIndex === i - 1
-      ) {
+        lastBlockIdx = i;
+      } else if (t.trim() !== "" && lastBlockIdx === i - 1 && hygienic(i)) {
         blocks[blocks.length - 1].text += ` ${t.trim()}`;
+        lastBlockIdx = i;
       }
     }
 

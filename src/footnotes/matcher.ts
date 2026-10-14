@@ -25,6 +25,7 @@ export function buildMatchTable(
     blocksByNumber.set(block.number, list);
   }
   const markerOccurrence = new Map<number, number>();
+  const usedBlocks = new Set<FootnoteBlock>();
   const matches: FootnoteMatch[] = [];
   let seq = 0;
   for (const marker of markers) {
@@ -45,12 +46,21 @@ export function buildMatchTable(
     if (first.citationDense === true && confidence === "high") {
       confidence = "medium";
     }
+    // Stress-test lesson: review-first means only high-confidence first
+    // references start checked. One-to-one both directions: a block already
+    // feeding an accepted match, and any repeat reference to the same number,
+    // surface unchecked — the user opts in per row.
+    const accepted =
+      confidence === "high" && occurrence === 1 && !usedBlocks.has(first);
+    if (accepted) {
+      usedBlocks.add(first);
+    }
     matches.push({
       id: `match-${marker.number}-${Date.now()}-${seq++}`,
       marker,
       block: first,
       confidence,
-      accepted: true,
+      accepted,
     });
     // Conflicting alternatives: surfaced, never accepted by default.
     for (const alt of candidates.slice(1)) {

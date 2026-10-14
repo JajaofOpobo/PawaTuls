@@ -11,6 +11,7 @@ import {
   NumberingRepairPlan,
 } from "../shared/types";
 import { safeWordRun } from "../shared/wordUtils";
+import { rewriteTextPreservingRuns } from "./text";
 
 type ManualStyle = "decimal" | "alpha" | "roman";
 
@@ -357,6 +358,7 @@ export async function applyRepairPlan(
         ? context.document.getSelection().paragraphs
         : context.document.body.paragraphs;
     paragraphs.load("text");
+    const ooxmls = paragraphs.items.map((p) => p.getOoxml());
     await context.sync();
     const ordered = [...plan.edits].sort((a, b) => b.paragraphIndex - a.paragraphIndex);
     let applied = 0;
@@ -367,7 +369,19 @@ export async function applyRepairPlan(
         skipped.push(edit.paragraphIndex);
         continue;
       }
-      para.insertText(edit.after + para.text.substring(edit.before.length), Word.InsertLocation.replace);
+      // Prefix-only rewrite preserving run formatting (stress-test lesson:
+      // whole-paragraph insertText wipes direct formatting).
+      const newText = edit.after + para.text.substring(edit.before.length);
+      const patched = rewriteTextPreservingRuns(
+        ooxmls[edit.paragraphIndex].value,
+        para.text,
+        newText
+      );
+      if (patched !== null) {
+        para.insertOoxml(patched, Word.InsertLocation.replace);
+      } else {
+        para.insertText(newText, Word.InsertLocation.replace);
+      }
       applied++;
     }
     await context.sync();

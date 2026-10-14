@@ -2174,6 +2174,15 @@ conflict (newer decision wins).
 - **Phase 28:** apply panel deltas (Appendix G).
 - **Phase 29:** add the Appendix G fixture matrix, integrity checks, and honesty
   rules to the test pass. Do not weaken failing tests to green.
+- **Phase 13 (amended, stress-test fix):** case/trim/collapse/tabs rewrite
+  `<w:t>` contents via `rewriteTextPreservingRuns` (formatting-preserving);
+  plain `insertText(Replace)` only as round-trip-mismatch fallback.
+- **Phase 25 (amended):** block starts exclude heading-style, native-list, and
+  in-table paragraphs; non-hygienic paras break continuation chains.
+- **Phase 26 (amended):** only high-confidence first references default
+  accepted; repeats and block-sharers surface unchecked (one-to-one both ways).
+- **Phase 33 repair (amended):** prefix-only rewrite via
+  `rewriteTextPreservingRuns`, same fallback.
 
 ---
 
