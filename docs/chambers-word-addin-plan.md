@@ -2459,7 +2459,6 @@ Resource IDs capped at 23 chars (schema limit 32).
    deferred, log written as specified).
 
 ### Conversion contract (identified footnote behavior)
-
 An approved match converts the citation block into a genuine Word footnote and
 removes it from the body, exactly: (a) the marker at its position becomes the
 footnote reference (marker text deleted, surroundings preserved); (b) the full
@@ -2491,3 +2490,38 @@ launcher fallback (manifest requires a SourceLocation).
 - Scan-failure hardening: step-labeled scan phases (banner names the step) +
   canonical whole-object font loads (nav-path collection loads proved
   unreliable across builds).
+
+---
+
+## APPENDIX L: NATIVE-DUPLICATE PURGE + FLAT RIBBON (SUPERSEDES APPENDIX K UI)
+
+Rule: features natively available in Word one-to-one are removed, not
+duplicated. Ribbon has NO dropdown menus — every feature is a flat button
+directly on the tab (KuTools-density grouping). Destructive buttons confirm
+through a confirm dialog (ExecuteFunction → displayDialogAsync confirm page →
+on confirm, run; event lifecycle held throughout).
+
+**Removed as native-duplicate:** font toggles/sizes/super/sub/clear-char,
+alignment/spacing/indents UI, Change Case + trims, style browser/creation,
+captions module, table-to-text, repeat-headers, widow control, paragraph
+borders, clear-all. Engine kept only where other modules depend on it
+(applyFont/applyParagraphFormat/mappers/applyStyle). Deleted outright:
+`captions.ts`, `clear.ts` (two keeper fns moved to `removal.ts`),
+`FormattingPanel.tsx`, orphaned fns in font/paragraph/styles/text/tables.
+
+**Kept (no native one-click):** collapse, ordinals, LF/PAR converts,
+field/list-to-text, empty paras/lines, breaks, hidden/dropcap/frames,
+tables/rows/cols/pictures/textboxes/controls, comments/hyperlinks/bookmarks,
+horizontals/extra-spacing, numbering audit+repair, profiles, select ×5,
+resize presets (50/100/150), footnote review/manage/convert, insertion log.
+
+**Ribbon tab groups (flat buttons):** Format (collapse, ordinals, LF→PM, PM→LB,
+field→text, list→text), Cleanup (8), Breaks (4), Tables (7 incl. resize
+presets), References (3), Profiles (3 builtins), Select (5), Tools (dialog:
+numbering + profiles), Footnotes (review dialog). Confirm flow for all 25
+destructive buttons; headless failures stay silent by design (dialogs report).
+
+**Dialogs:** footnote-dialog (review/manage), tools-dialog (NumberingSection +
+ProfilesSection), confirm-dialog (generic message → confirm/cancel).
+Task pane remains a slim launcher fallback. Phases 16/32/34/36/38/39/40 UI
+text is superseded by this appendix; module phases stand.

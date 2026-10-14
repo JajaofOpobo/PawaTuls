@@ -26,6 +26,7 @@ module.exports = async (env, options) => {
       commands: "./src/commands/commands.ts",
       "footnote-dialog": "./src/dialogs/footnote-dialog.tsx",
       "tools-dialog": "./src/dialogs/tools-dialog.tsx",
+      "confirm-dialog": "./src/dialogs/confirm-dialog.tsx",
     },
     output: {
       clean: true,
@@ -81,6 +82,11 @@ module.exports = async (env, options) => {
         template: "./src/dialogs/tools-dialog.html",
         chunks: ["polyfill", "tools-dialog"],
       }),
+      new HtmlWebpackPlugin({
+        filename: "confirm-dialog.html",
+        template: "./src/dialogs/confirm-dialog.html",
+        chunks: ["polyfill", "confirm-dialog"],
+      }),
       new CopyWebpackPlugin({
         patterns: [
           {
@@ -104,10 +110,10 @@ module.exports = async (env, options) => {
         Promise: ["es6-promise", "Promise"],
       }),
     ],
-    // Cap minifier workers: full parallelism OOMs on constrained machines
-    // (observed post-emit worker crash with the dev server resident).
+    // Cap minifier workers: jest-worker cloning OOMs on big bundles in this
+    // environment — run terser in-process instead (slower, reliable).
     optimization: {
-      minimizer: [new TerserPlugin({ parallel: 2 })],
+      minimizer: [new TerserPlugin({ parallel: false })],
     },
   };
 

@@ -1,80 +1,19 @@
 /**
- * text.ts — Phase 13: text transform operations.
- * Integration notes §4: KuTools has no case-conversion feature, so there is no
- * decompilation precedent. Office.js exposes no Range.Case equivalent, so all
- * transforms below are JavaScript string processing.
+ * text.ts — text cleanup engine. Case conversion and trims removed as
+ * native-duplicate (Word Change Case + Find/Replace cover them one-to-one).
+ * Kept: collapse (no native one-click), ordinals (no native retroactive op).
  *
  * Stress-test lesson: Range.insertText(Replace) regenerates runs and WIPES
  * direct character formatting on the rewritten span (same data-loss class as
  * KuTools' .Text assignment). Every function here instead rewrites <w:t>
  * contents inside the paragraph OOXML, preserving all <w:rPr> formatting.
  */
-import { CaseTransform } from "../shared/types";
 import { getSelectionOrThrow, getSelectionParagraphsOrThrow, safeWordRun } from "../shared/wordUtils";
-
-function applyCaseTransform(text: string, transform: CaseTransform): string {
-  switch (transform) {
-    case "upper":
-      return text.toUpperCase();
-    case "lower":
-      return text.toLowerCase();
-    case "title":
-      return text.replace(/\b\w/g, (c) => c.toUpperCase()).replace(/\B\w/g, (c) => c.toLowerCase());
-    case "sentence": {
-      const lowered = text.toLowerCase();
-      return lowered
-        .replace(/(^\s*[a-z])/, (c) => c.toUpperCase())
-        .replace(/([.!?]\s+[a-z])/g, (c) => c.toUpperCase());
-    }
-    case "toggle":
-      return text
-        .split("")
-        .map((c) => {
-          if (c >= "a" && c <= "z") return c.toUpperCase();
-          if (c >= "A" && c <= "Z") return c.toLowerCase();
-          return c;
-        })
-        .join("");
-  }
-}
-
-export async function transformCase(transform: CaseTransform): Promise<{ error?: string }> {
-  return rewriteSelectionText((text) => {
-    const next = applyCaseTransform(text, transform);
-    return next === text ? null : next;
-  });
-}
-
-export async function trimSelectionSpaces(): Promise<{ error?: string }> {
-  return rewriteSelectionText((text) => {
-    const next = text.trim();
-    return next === text ? null : next;
-  });
-}
 
 export async function collapseMultipleSpaces(): Promise<{ error?: string }> {
   return rewriteSelectionText((text) => {
     const next = text.replace(/ {2,}/g, " ");
     return next === text ? null : next;
-  });
-}
-
-export async function trimParagraphLeadingTabs(): Promise<{ error?: string }> {
-  return safeWordRun(async (context) => {
-    const paragraphs = await getSelectionParagraphsOrThrow(context);
-    const ooxmls = paragraphs.items.map((p) => p.getOoxml());
-    await context.sync();
-    for (let i = 0; i < paragraphs.items.length; i++) {
-      const stripped = paragraphs.items[i].text.replace(/^\t+/, "");
-      if (stripped === paragraphs.items[i].text) {
-        continue;
-      }
-      const patched = rewriteTextPreservingRuns(ooxmls[i].value, paragraphs.items[i].text, stripped);
-      if (patched !== null) {
-        paragraphs.items[i].insertOoxml(patched, Word.InsertLocation.replace);
-      }
-    }
-    await context.sync();
   });
 }
 

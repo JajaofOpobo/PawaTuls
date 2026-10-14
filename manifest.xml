@@ -40,431 +40,459 @@
           </GetStarted>
           <FunctionFile resid="Commands.Url" />
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-                        <CustomTab id="PawaTuls.Tab">
+                                    <CustomTab id="PawaTuls.Tab">
             <Group id="PawaTuls.FormatGroup">
-              <Label resid="PT.FormatGroup.Label" />
+              <Label resid="PT.Format.Label" />
                 <Icon>
                   <bt:Image size="16" resid="Icon.16x16" />
                   <bt:Image size="32" resid="Icon.32x32" />
                   <bt:Image size="80" resid="Icon.80x80" />
                 </Icon>
-              <Control xsi:type="Menu" id="PawaTuls.FormatMenu">
-                <Label resid="PT.M.Format.Label" />
-                <Supertip><Title resid="PT.M.Format.Label" /><Description resid="PT.M.Format.Tip" /></Supertip>
+              <Control xsi:type="Button" id="PawaTuls.Format.Collapse">
+                <Label resid="PT.B.Format.Collapse" />
+                <Supertip><Title resid="PT.B.Format.Collapse" /><Description resid="PT.B.Format.Collapse.Tip" /></Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                <Items>
-                  <Item id="PawaTuls.M.Format.Bold">
-                    <Label resid="PT.M.Format.Bold" />
-                    <Supertip><Title resid="PT.M.Format.Bold" /><Description resid="PT.M.Format.Bold.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>boldQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Italic">
-                    <Label resid="PT.M.Format.Italic" />
-                    <Supertip><Title resid="PT.M.Format.Italic" /><Description resid="PT.M.Format.Italic.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>italicQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Superscript">
-                    <Label resid="PT.M.Format.Superscript" />
-                    <Supertip><Title resid="PT.M.Format.Superscript" /><Description resid="PT.M.Format.Superscript.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>superscriptQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Subscript">
-                    <Label resid="PT.M.Format.Subscript" />
-                    <Supertip><Title resid="PT.M.Format.Subscript" /><Description resid="PT.M.Format.Subscript.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>subscriptQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Bigger">
-                    <Label resid="PT.M.Format.Bigger" />
-                    <Supertip><Title resid="PT.M.Format.Bigger" /><Description resid="PT.M.Format.Bigger.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>biggerQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Smaller">
-                    <Label resid="PT.M.Format.Smaller" />
-                    <Supertip><Title resid="PT.M.Format.Smaller" /><Description resid="PT.M.Format.Smaller.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>smallerQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.ClearChar">
-                    <Label resid="PT.M.Format.ClearChar" />
-                    <Supertip><Title resid="PT.M.Format.ClearChar" /><Description resid="PT.M.Format.ClearChar.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>clearCharQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.AlignLeft">
-                    <Label resid="PT.M.Format.AlignLeft" />
-                    <Supertip><Title resid="PT.M.Format.AlignLeft" /><Description resid="PT.M.Format.AlignLeft.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>alignLeftQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.AlignCenter">
-                    <Label resid="PT.M.Format.AlignCenter" />
-                    <Supertip><Title resid="PT.M.Format.AlignCenter" /><Description resid="PT.M.Format.AlignCenter.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>alignCenterQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.AlignRight">
-                    <Label resid="PT.M.Format.AlignRight" />
-                    <Supertip><Title resid="PT.M.Format.AlignRight" /><Description resid="PT.M.Format.AlignRight.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>alignRightQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.AlignJustify">
-                    <Label resid="PT.M.Format.AlignJustify" />
-                    <Supertip><Title resid="PT.M.Format.AlignJustify" /><Description resid="PT.M.Format.AlignJustify.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>alignJustifyQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Single">
-                    <Label resid="PT.M.Format.Single" />
-                    <Supertip><Title resid="PT.M.Format.Single" /><Description resid="PT.M.Format.Single.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>singleQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.OneFive">
-                    <Label resid="PT.M.Format.OneFive" />
-                    <Supertip><Title resid="PT.M.Format.OneFive" /><Description resid="PT.M.Format.OneFive.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>oneFiveQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Double">
-                    <Label resid="PT.M.Format.Double" />
-                    <Supertip><Title resid="PT.M.Format.Double" /><Description resid="PT.M.Format.Double.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>doubleQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Upper">
-                    <Label resid="PT.M.Format.Upper" />
-                    <Supertip><Title resid="PT.M.Format.Upper" /><Description resid="PT.M.Format.Upper.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>upperQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Lower">
-                    <Label resid="PT.M.Format.Lower" />
-                    <Supertip><Title resid="PT.M.Format.Lower" /><Description resid="PT.M.Format.Lower.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>lowerQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Title">
-                    <Label resid="PT.M.Format.Title" />
-                    <Supertip><Title resid="PT.M.Format.Title" /><Description resid="PT.M.Format.Title.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>titleQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Sentence">
-                    <Label resid="PT.M.Format.Sentence" />
-                    <Supertip><Title resid="PT.M.Format.Sentence" /><Description resid="PT.M.Format.Sentence.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>sentenceQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Toggle">
-                    <Label resid="PT.M.Format.Toggle" />
-                    <Supertip><Title resid="PT.M.Format.Toggle" /><Description resid="PT.M.Format.Toggle.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>toggleQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Collapse">
-                    <Label resid="PT.M.Format.Collapse" />
-                    <Supertip><Title resid="PT.M.Format.Collapse" /><Description resid="PT.M.Format.Collapse.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>collapseQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Ordinals">
-                    <Label resid="PT.M.Format.Ordinals" />
-                    <Supertip><Title resid="PT.M.Format.Ordinals" /><Description resid="PT.M.Format.Ordinals.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>ordinalsQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Format.Widow">
-                    <Label resid="PT.M.Format.Widow" />
-                    <Supertip><Title resid="PT.M.Format.Widow" /><Description resid="PT.M.Format.Widow.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>widowQuick</FunctionName></Action>
-                  </Item>
-                </Items>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>formatCollapseBtn</FunctionName></Action>
               </Control>
+              <Control xsi:type="Button" id="PawaTuls.Format.Ordinals">
+                <Label resid="PT.B.Format.Ordinals" />
+                <Supertip><Title resid="PT.B.Format.Ordinals" /><Description resid="PT.B.Format.Ordinals.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>formatOrdinalsBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Format.LfToPm">
+                <Label resid="PT.B.Format.LfToPm" />
+                <Supertip><Title resid="PT.B.Format.LfToPm" /><Description resid="PT.B.Format.LfToPm.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>formatLfToPmBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Format.PmToLf">
+                <Label resid="PT.B.Format.PmToLf" />
+                <Supertip><Title resid="PT.B.Format.PmToLf" /><Description resid="PT.B.Format.PmToLf.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>formatPmToLfBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Format.FieldText">
+                <Label resid="PT.B.Format.FieldText" />
+                <Supertip><Title resid="PT.B.Format.FieldText" /><Description resid="PT.B.Format.FieldText.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>formatFieldTextBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Format.ListText">
+                <Label resid="PT.B.Format.ListText" />
+                <Supertip><Title resid="PT.B.Format.ListText" /><Description resid="PT.B.Format.ListText.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>formatListTextBtn</FunctionName></Action>
+              </Control>
+            </Group>
+            <Group id="PawaTuls.CleanupGroup">
+              <Label resid="PT.Cleanup.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+              <Control xsi:type="Button" id="PawaTuls.Cleanup.EmptyParas">
+                <Label resid="PT.B.Cleanup.EmptyParas" />
+                <Supertip><Title resid="PT.B.Cleanup.EmptyParas" /><Description resid="PT.B.Cleanup.EmptyParas.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>cleanupEmptyParasBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Cleanup.TabsSpaces">
+                <Label resid="PT.B.Cleanup.TabsSpaces" />
+                <Supertip><Title resid="PT.B.Cleanup.TabsSpaces" /><Description resid="PT.B.Cleanup.TabsSpaces.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>cleanupTabsSpacesBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Cleanup.EmptyLines">
+                <Label resid="PT.B.Cleanup.EmptyLines" />
+                <Supertip><Title resid="PT.B.Cleanup.EmptyLines" /><Description resid="PT.B.Cleanup.EmptyLines.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>cleanupEmptyLinesBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Cleanup.HorizLines">
+                <Label resid="PT.B.Cleanup.HorizLines" />
+                <Supertip><Title resid="PT.B.Cleanup.HorizLines" /><Description resid="PT.B.Cleanup.HorizLines.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>cleanupHorizLinesBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Cleanup.ExtraSpacing">
+                <Label resid="PT.B.Cleanup.ExtraSpacing" />
+                <Supertip><Title resid="PT.B.Cleanup.ExtraSpacing" /><Description resid="PT.B.Cleanup.ExtraSpacing.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>cleanupExtraSpacingBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Cleanup.Hidden">
+                <Label resid="PT.B.Cleanup.Hidden" />
+                <Supertip><Title resid="PT.B.Cleanup.Hidden" /><Description resid="PT.B.Cleanup.Hidden.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>cleanupHiddenBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Cleanup.DropCaps">
+                <Label resid="PT.B.Cleanup.DropCaps" />
+                <Supertip><Title resid="PT.B.Cleanup.DropCaps" /><Description resid="PT.B.Cleanup.DropCaps.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>cleanupDropCapsBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Cleanup.Frames">
+                <Label resid="PT.B.Cleanup.Frames" />
+                <Supertip><Title resid="PT.B.Cleanup.Frames" /><Description resid="PT.B.Cleanup.Frames.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>cleanupFramesBtn</FunctionName></Action>
+              </Control>
+            </Group>
+            <Group id="PawaTuls.BreaksGroup">
+              <Label resid="PT.Breaks.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+              <Control xsi:type="Button" id="PawaTuls.Breaks.PageBreaks">
+                <Label resid="PT.B.Breaks.PageBreaks" />
+                <Supertip><Title resid="PT.B.Breaks.PageBreaks" /><Description resid="PT.B.Breaks.PageBreaks.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>breaksPageBreaksBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Breaks.ColumnBreaks">
+                <Label resid="PT.B.Breaks.ColumnBreaks" />
+                <Supertip><Title resid="PT.B.Breaks.ColumnBreaks" /><Description resid="PT.B.Breaks.ColumnBreaks.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>breaksColumnBreaksBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Breaks.SectionBreaks">
+                <Label resid="PT.B.Breaks.SectionBreaks" />
+                <Supertip><Title resid="PT.B.Breaks.SectionBreaks" /><Description resid="PT.B.Breaks.SectionBreaks.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>breaksSectionBreaksBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Breaks.AllBreaks">
+                <Label resid="PT.B.Breaks.AllBreaks" />
+                <Supertip><Title resid="PT.B.Breaks.AllBreaks" /><Description resid="PT.B.Breaks.AllBreaks.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>breaksAllBreaksBtn</FunctionName></Action>
+              </Control>
+            </Group>
+            <Group id="PawaTuls.TablesGroup">
+              <Label resid="PT.Tables.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+              <Control xsi:type="Button" id="PawaTuls.Tables.RemoveTables">
+                <Label resid="PT.B.Tables.RemoveTables" />
+                <Supertip><Title resid="PT.B.Tables.RemoveTables" /><Description resid="PT.B.Tables.RemoveTables.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>tablesRemoveTablesBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Tables.EmptyRows">
+                <Label resid="PT.B.Tables.EmptyRows" />
+                <Supertip><Title resid="PT.B.Tables.EmptyRows" /><Description resid="PT.B.Tables.EmptyRows.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>tablesEmptyRowsBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Tables.EmptyCols">
+                <Label resid="PT.B.Tables.EmptyCols" />
+                <Supertip><Title resid="PT.B.Tables.EmptyCols" /><Description resid="PT.B.Tables.EmptyCols.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>tablesEmptyColsBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Tables.Pictures">
+                <Label resid="PT.B.Tables.Pictures" />
+                <Supertip><Title resid="PT.B.Tables.Pictures" /><Description resid="PT.B.Tables.Pictures.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>tablesPicturesBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Tables.TextBoxes">
+                <Label resid="PT.B.Tables.TextBoxes" />
+                <Supertip><Title resid="PT.B.Tables.TextBoxes" /><Description resid="PT.B.Tables.TextBoxes.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>tablesTextBoxesBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Tables.Controls">
+                <Label resid="PT.B.Tables.Controls" />
+                <Supertip><Title resid="PT.B.Tables.Controls" /><Description resid="PT.B.Tables.Controls.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>tablesControlsBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Tables.Resize50">
+                <Label resid="PT.B.Tables.Resize50" />
+                <Supertip><Title resid="PT.B.Tables.Resize50" /><Description resid="PT.B.Tables.Resize50.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>tablesResize50Btn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Tables.Resize100">
+                <Label resid="PT.B.Tables.Resize100" />
+                <Supertip><Title resid="PT.B.Tables.Resize100" /><Description resid="PT.B.Tables.Resize100.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>tablesResize100Btn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Tables.Resize150">
+                <Label resid="PT.B.Tables.Resize150" />
+                <Supertip><Title resid="PT.B.Tables.Resize150" /><Description resid="PT.B.Tables.Resize150.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>tablesResize150Btn</FunctionName></Action>
+              </Control>
+            </Group>
+            <Group id="PawaTuls.ReferencesGroup">
+              <Label resid="PT.References.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+              <Control xsi:type="Button" id="PawaTuls.References.Comments">
+                <Label resid="PT.B.References.Comments" />
+                <Supertip><Title resid="PT.B.References.Comments" /><Description resid="PT.B.References.Comments.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>referencesCommentsBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.References.Hyperlinks">
+                <Label resid="PT.B.References.Hyperlinks" />
+                <Supertip><Title resid="PT.B.References.Hyperlinks" /><Description resid="PT.B.References.Hyperlinks.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>referencesHyperlinksBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.References.Bookmarks">
+                <Label resid="PT.B.References.Bookmarks" />
+                <Supertip><Title resid="PT.B.References.Bookmarks" /><Description resid="PT.B.References.Bookmarks.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>referencesBookmarksBtn</FunctionName></Action>
+              </Control>
+            </Group>
+            <Group id="PawaTuls.ProfilesGroup">
+              <Label resid="PT.Profiles.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+              <Control xsi:type="Button" id="PawaTuls.Profiles.CourtBody">
+                <Label resid="PT.B.Profiles.CourtBody" />
+                <Supertip><Title resid="PT.B.Profiles.CourtBody" /><Description resid="PT.B.Profiles.CourtBody.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>profilesCourtBodyBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Profiles.CourtHeading">
+                <Label resid="PT.B.Profiles.CourtHeading" />
+                <Supertip><Title resid="PT.B.Profiles.CourtHeading" /><Description resid="PT.B.Profiles.CourtHeading.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>profilesCourtHeadingBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Profiles.SingleReset">
+                <Label resid="PT.B.Profiles.SingleReset" />
+                <Supertip><Title resid="PT.B.Profiles.SingleReset" /><Description resid="PT.B.Profiles.SingleReset.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>profilesSingleResetBtn</FunctionName></Action>
+              </Control>
+            </Group>
+            <Group id="PawaTuls.SelectGroup">
+              <Label resid="PT.Select.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+              <Control xsi:type="Button" id="PawaTuls.Select.Tables">
+                <Label resid="PT.B.Select.Tables" />
+                <Supertip><Title resid="PT.B.Select.Tables" /><Description resid="PT.B.Select.Tables.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>selectTablesBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Select.EmptyParas">
+                <Label resid="PT.B.Select.EmptyParas" />
+                <Supertip><Title resid="PT.B.Select.EmptyParas" /><Description resid="PT.B.Select.EmptyParas.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>selectEmptyParasBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Select.Headings">
+                <Label resid="PT.B.Select.Headings" />
+                <Supertip><Title resid="PT.B.Select.Headings" /><Description resid="PT.B.Select.Headings.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>selectHeadingsBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Select.ShortParas">
+                <Label resid="PT.B.Select.ShortParas" />
+                <Supertip><Title resid="PT.B.Select.ShortParas" /><Description resid="PT.B.Select.ShortParas.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>selectShortParasBtn</FunctionName></Action>
+              </Control>
+              <Control xsi:type="Button" id="PawaTuls.Select.Pictures">
+                <Label resid="PT.B.Select.Pictures" />
+                <Supertip><Title resid="PT.B.Select.Pictures" /><Description resid="PT.B.Select.Pictures.Tip" /></Supertip>
+                  <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
+                <Action xsi:type="ExecuteFunction"><FunctionName>selectPicturesBtn</FunctionName></Action>
+              </Control>
+            </Group>
+            <Group id="PawaTuls.ToolsGroup">
+              <Label resid="PT.ToolsGroup.Label" />
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16x16" />
+                  <bt:Image size="32" resid="Icon.32x32" />
+                  <bt:Image size="80" resid="Icon.80x80" />
+                </Icon>
               <Control xsi:type="Button" id="PawaTuls.ToolsButton">
                 <Label resid="PT.Tools.Label" />
                 <Supertip><Title resid="PT.Tools.Label" /><Description resid="PT.Tools.Tip" /></Supertip>
-                <Icon>
+                  <Icon>
                   <bt:Image size="16" resid="Icon.16x16" />
                   <bt:Image size="32" resid="Icon.32x32" />
                   <bt:Image size="80" resid="Icon.80x80" />
                 </Icon>
                 <Action xsi:type="ExecuteFunction"><FunctionName>openToolsDialog</FunctionName></Action>
-              </Control>
-            </Group>
-            <Group id="PawaTuls.InsertGroup">
-              <Label resid="PT.InsertGroup.Label" />
-                <Icon>
-                  <bt:Image size="16" resid="Icon.16x16" />
-                  <bt:Image size="32" resid="Icon.32x32" />
-                  <bt:Image size="80" resid="Icon.80x80" />
-                </Icon>
-              <Control xsi:type="Menu" id="PawaTuls.CaptionsMenu">
-                <Label resid="PT.M.Captions.Label" />
-                <Supertip><Title resid="PT.M.Captions.Label" /><Description resid="PT.M.Captions.Tip" /></Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                <Items>
-                  <Item id="PawaTuls.M.Captions.Table">
-                    <Label resid="PT.M.Captions.Table" />
-                    <Supertip><Title resid="PT.M.Captions.Table" /><Description resid="PT.M.Captions.Table.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>tableQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Captions.Figure">
-                    <Label resid="PT.M.Captions.Figure" />
-                    <Supertip><Title resid="PT.M.Captions.Figure" /><Description resid="PT.M.Captions.Figure.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>figureQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Captions.Equation">
-                    <Label resid="PT.M.Captions.Equation" />
-                    <Supertip><Title resid="PT.M.Captions.Equation" /><Description resid="PT.M.Captions.Equation.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>equationQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Captions.Refresh">
-                    <Label resid="PT.M.Captions.Refresh" />
-                    <Supertip><Title resid="PT.M.Captions.Refresh" /><Description resid="PT.M.Captions.Refresh.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>refreshQuick</FunctionName></Action>
-                  </Item>
-                </Items>
-              </Control>
-            </Group>
-            <Group id="PawaTuls.SelectGroup">
-              <Label resid="PT.SelectGroup.Label" />
-                <Icon>
-                  <bt:Image size="16" resid="Icon.16x16" />
-                  <bt:Image size="32" resid="Icon.32x32" />
-                  <bt:Image size="80" resid="Icon.80x80" />
-                </Icon>
-              <Control xsi:type="Menu" id="PawaTuls.SelectMenu">
-                <Label resid="PT.M.Select.Label" />
-                <Supertip><Title resid="PT.M.Select.Label" /><Description resid="PT.M.Select.Tip" /></Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                <Items>
-                  <Item id="PawaTuls.M.Select.Tables">
-                    <Label resid="PT.M.Select.Tables" />
-                    <Supertip><Title resid="PT.M.Select.Tables" /><Description resid="PT.M.Select.Tables.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>tablesQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Select.EmptyParas">
-                    <Label resid="PT.M.Select.EmptyParas" />
-                    <Supertip><Title resid="PT.M.Select.EmptyParas" /><Description resid="PT.M.Select.EmptyParas.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>emptyParasQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Select.Headings">
-                    <Label resid="PT.M.Select.Headings" />
-                    <Supertip><Title resid="PT.M.Select.Headings" /><Description resid="PT.M.Select.Headings.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>headingsQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Select.ShortParas">
-                    <Label resid="PT.M.Select.ShortParas" />
-                    <Supertip><Title resid="PT.M.Select.ShortParas" /><Description resid="PT.M.Select.ShortParas.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>shortParasQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Select.Pictures">
-                    <Label resid="PT.M.Select.Pictures" />
-                    <Supertip><Title resid="PT.M.Select.Pictures" /><Description resid="PT.M.Select.Pictures.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>picturesQuick</FunctionName></Action>
-                  </Item>
-                </Items>
-              </Control>
-            </Group>
-            <Group id="PawaTuls.ProfileGroup">
-              <Label resid="PT.ProfileGroup.Label" />
-                <Icon>
-                  <bt:Image size="16" resid="Icon.16x16" />
-                  <bt:Image size="32" resid="Icon.32x32" />
-                  <bt:Image size="80" resid="Icon.80x80" />
-                </Icon>
-              <Control xsi:type="Menu" id="PawaTuls.ProfilesMenu">
-                <Label resid="PT.M.Profiles.Label" />
-                <Supertip><Title resid="PT.M.Profiles.Label" /><Description resid="PT.M.Profiles.Tip" /></Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                <Items>
-                  <Item id="PawaTuls.M.Profiles.CourtBody">
-                    <Label resid="PT.M.Profiles.CourtBody" />
-                    <Supertip><Title resid="PT.M.Profiles.CourtBody" /><Description resid="PT.M.Profiles.CourtBody.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>courtBodyQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Profiles.CourtHeading">
-                    <Label resid="PT.M.Profiles.CourtHeading" />
-                    <Supertip><Title resid="PT.M.Profiles.CourtHeading" /><Description resid="PT.M.Profiles.CourtHeading.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>courtHeadingQuick</FunctionName></Action>
-                  </Item>
-                  <Item id="PawaTuls.M.Profiles.SingleReset">
-                    <Label resid="PT.M.Profiles.SingleReset" />
-                    <Supertip><Title resid="PT.M.Profiles.SingleReset" /><Description resid="PT.M.Profiles.SingleReset.Tip" /></Supertip>
-                    <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                    <Action xsi:type="ExecuteFunction"><FunctionName>singleResetQuick</FunctionName></Action>
-                  </Item>
-                </Items>
               </Control>
             </Group>
             <Group id="PawaTuls.FootnoteGroup">
@@ -477,7 +505,7 @@
               <Control xsi:type="Button" id="PawaTuls.ReviewButton">
                 <Label resid="PT.Review.Label" />
                 <Supertip><Title resid="PT.Review.Label" /><Description resid="PT.Review.Tip" /></Supertip>
-                <Icon>
+                  <Icon>
                   <bt:Image size="16" resid="Icon.16x16" />
                   <bt:Image size="32" resid="Icon.32x32" />
                   <bt:Image size="80" resid="Icon.80x80" />
@@ -506,95 +534,99 @@
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="PawaTuls has loaded. Use the PawaTuls tab on the ribbon." />
-        <bt:String id="PT.Tab.Label" DefaultValue="PawaTuls" />
-        <bt:String id="PT.FormatGroup.Label" DefaultValue="Formatting" />
+        <bt:String id="PT.Format.Label" DefaultValue="Format" />
+        <bt:String id="PT.Cleanup.Label" DefaultValue="Cleanup" />
+        <bt:String id="PT.Breaks.Label" DefaultValue="Breaks" />
+        <bt:String id="PT.Tables.Label" DefaultValue="Tables" />
+        <bt:String id="PT.References.Label" DefaultValue="References" />
+        <bt:String id="PT.Profiles.Label" DefaultValue="Profiles" />
+        <bt:String id="PT.Select.Label" DefaultValue="Select" />
+        <bt:String id="PT.ToolsGroup.Label" DefaultValue="Tools" />
         <bt:String id="PT.FootnoteGroup.Label" DefaultValue="Footnotes" />
-        <bt:String id="PT.InsertGroup.Label" DefaultValue="Insert" />
-        <bt:String id="PT.SelectGroup.Label" DefaultValue="Select" />
-        <bt:String id="PT.ProfileGroup.Label" DefaultValue="Profiles" />
-        <bt:String id="PT.Tools.Label" DefaultValue="All Tools" />
+        <bt:String id="PT.B.Breaks.AllBreaks" DefaultValue="All Breaks" />
+        <bt:String id="PT.B.Breaks.ColumnBreaks" DefaultValue="Column Breaks" />
+        <bt:String id="PT.B.Breaks.PageBreaks" DefaultValue="Page Breaks" />
+        <bt:String id="PT.B.Breaks.SectionBreaks" DefaultValue="Section Breaks" />
+        <bt:String id="PT.B.Cleanup.DropCaps" DefaultValue="Drop Caps" />
+        <bt:String id="PT.B.Cleanup.EmptyLines" DefaultValue="Empty Lines" />
+        <bt:String id="PT.B.Cleanup.EmptyParas" DefaultValue="Empty Paras" />
+        <bt:String id="PT.B.Cleanup.ExtraSpacing" DefaultValue="Extra Spacing" />
+        <bt:String id="PT.B.Cleanup.Frames" DefaultValue="Frames" />
+        <bt:String id="PT.B.Cleanup.Hidden" DefaultValue="Hidden Text" />
+        <bt:String id="PT.B.Cleanup.HorizLines" DefaultValue="Horiz Lines" />
+        <bt:String id="PT.B.Cleanup.TabsSpaces" DefaultValue="Tabs to Spaces" />
+        <bt:String id="PT.B.Format.Collapse" DefaultValue="Collapse Spaces" />
+        <bt:String id="PT.B.Format.FieldText" DefaultValue="Fields to Text" />
+        <bt:String id="PT.B.Format.LfToPm" DefaultValue="Breaks to Paras" />
+        <bt:String id="PT.B.Format.ListText" DefaultValue="List to Text" />
+        <bt:String id="PT.B.Format.Ordinals" DefaultValue="Ordinals" />
+        <bt:String id="PT.B.Format.PmToLf" DefaultValue="Paras to Breaks" />
+        <bt:String id="PT.B.Profiles.CourtBody" DefaultValue="Court Body" />
+        <bt:String id="PT.B.Profiles.CourtHeading" DefaultValue="Court Heading" />
+        <bt:String id="PT.B.Profiles.SingleReset" DefaultValue="Single Reset" />
+        <bt:String id="PT.B.References.Bookmarks" DefaultValue="Bookmarks" />
+        <bt:String id="PT.B.References.Comments" DefaultValue="Comments" />
+        <bt:String id="PT.B.References.Hyperlinks" DefaultValue="Hyperlinks" />
+        <bt:String id="PT.B.Select.EmptyParas" DefaultValue="Empty Paras" />
+        <bt:String id="PT.B.Select.Headings" DefaultValue="Headings" />
+        <bt:String id="PT.B.Select.Pictures" DefaultValue="Pictures" />
+        <bt:String id="PT.B.Select.ShortParas" DefaultValue="Short Paras" />
+        <bt:String id="PT.B.Select.Tables" DefaultValue="Select Tables" />
+        <bt:String id="PT.B.Tables.Controls" DefaultValue="Controls" />
+        <bt:String id="PT.B.Tables.EmptyCols" DefaultValue="Empty Cols" />
+        <bt:String id="PT.B.Tables.EmptyRows" DefaultValue="Empty Rows" />
+        <bt:String id="PT.B.Tables.Pictures" DefaultValue="Pictures" />
+        <bt:String id="PT.B.Tables.RemoveTables" DefaultValue="Remove Tables" />
+        <bt:String id="PT.B.Tables.Resize100" DefaultValue="Images 100%" />
+        <bt:String id="PT.B.Tables.Resize150" DefaultValue="Images 150%" />
+        <bt:String id="PT.B.Tables.Resize50" DefaultValue="Images 50%" />
+        <bt:String id="PT.B.Tables.TextBoxes" DefaultValue="Text Boxes" />
         <bt:String id="PT.Review.Label" DefaultValue="Review Footnotes" />
-        <bt:String id="PT.M.Format.Label" DefaultValue="Format" />
-        <bt:String id="PT.M.Format.Bold" DefaultValue="Bold" />
-        <bt:String id="PT.M.Format.Italic" DefaultValue="Italic" />
-        <bt:String id="PT.M.Format.Superscript" DefaultValue="Superscript" />
-        <bt:String id="PT.M.Format.Subscript" DefaultValue="Subscript" />
-        <bt:String id="PT.M.Format.Bigger" DefaultValue="Font Bigger" />
-        <bt:String id="PT.M.Format.Smaller" DefaultValue="Font Smaller" />
-        <bt:String id="PT.M.Format.ClearChar" DefaultValue="Clear Char" />
-        <bt:String id="PT.M.Format.AlignLeft" DefaultValue="Align Left" />
-        <bt:String id="PT.M.Format.AlignCenter" DefaultValue="Align Center" />
-        <bt:String id="PT.M.Format.AlignRight" DefaultValue="Align Right" />
-        <bt:String id="PT.M.Format.AlignJustify" DefaultValue="Justify" />
-        <bt:String id="PT.M.Format.Single" DefaultValue="Single Spacing" />
-        <bt:String id="PT.M.Format.OneFive" DefaultValue="1.5 Spacing" />
-        <bt:String id="PT.M.Format.Double" DefaultValue="Double Spacing" />
-        <bt:String id="PT.M.Format.Upper" DefaultValue="UPPERCASE" />
-        <bt:String id="PT.M.Format.Lower" DefaultValue="lowercase" />
-        <bt:String id="PT.M.Format.Title" DefaultValue="Title Case" />
-        <bt:String id="PT.M.Format.Sentence" DefaultValue="Sentence case" />
-        <bt:String id="PT.M.Format.Toggle" DefaultValue="tOGGLE case" />
-        <bt:String id="PT.M.Format.Collapse" DefaultValue="Collapse Spaces" />
-        <bt:String id="PT.M.Format.Ordinals" DefaultValue="Ordinals" />
-        <bt:String id="PT.M.Format.Widow" DefaultValue="Widow Control" />
-        <bt:String id="PT.M.Captions.Label" DefaultValue="Captions" />
-        <bt:String id="PT.M.Captions.Table" DefaultValue="Table Caption" />
-        <bt:String id="PT.M.Captions.Figure" DefaultValue="Figure Caption" />
-        <bt:String id="PT.M.Captions.Equation" DefaultValue="Equation Caption" />
-        <bt:String id="PT.M.Captions.Refresh" DefaultValue="Refresh Captions" />
-        <bt:String id="PT.M.Select.Label" DefaultValue="Select" />
-        <bt:String id="PT.M.Select.Tables" DefaultValue="Select Tables" />
-        <bt:String id="PT.M.Select.EmptyParas" DefaultValue="Empty Paragraphs" />
-        <bt:String id="PT.M.Select.Headings" DefaultValue="Headings" />
-        <bt:String id="PT.M.Select.ShortParas" DefaultValue="Short Paragraphs" />
-        <bt:String id="PT.M.Select.Pictures" DefaultValue="Pictures" />
-        <bt:String id="PT.M.Profiles.Label" DefaultValue="Profiles" />
-        <bt:String id="PT.M.Profiles.CourtBody" DefaultValue="Court Body" />
-        <bt:String id="PT.M.Profiles.CourtHeading" DefaultValue="Court Heading" />
-        <bt:String id="PT.M.Profiles.SingleReset" DefaultValue="Single Reset" />
+        <bt:String id="PT.Tab.Label" DefaultValue="PawaTuls" />
+        <bt:String id="PT.Tools.Label" DefaultValue="All Tools" />
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="Formatting, Nigerian legal workflows, and footnote detection for Word." />
-        <bt:String id="PT.Tools.Tip" DefaultValue="Open all formatting tools in a dialog." />
-        <bt:String id="PT.Review.Tip" DefaultValue="Review and convert pasted footnotes in a dialog." />
-        <bt:String id="PT.M.Format.Tip" DefaultValue="Format commands." />
-        <bt:String id="PT.M.Format.Bold.Tip" DefaultValue="Toggle bold on the selection." />
-        <bt:String id="PT.M.Format.Italic.Tip" DefaultValue="Toggle italic on the selection." />
-        <bt:String id="PT.M.Format.Superscript.Tip" DefaultValue="Superscript the selection." />
-        <bt:String id="PT.M.Format.Subscript.Tip" DefaultValue="Subscript the selection." />
-        <bt:String id="PT.M.Format.Bigger.Tip" DefaultValue="Increase font size." />
-        <bt:String id="PT.M.Format.Smaller.Tip" DefaultValue="Decrease font size." />
-        <bt:String id="PT.M.Format.ClearChar.Tip" DefaultValue="Clear character formatting." />
-        <bt:String id="PT.M.Format.AlignLeft.Tip" DefaultValue="Align left." />
-        <bt:String id="PT.M.Format.AlignCenter.Tip" DefaultValue="Center alignment." />
-        <bt:String id="PT.M.Format.AlignRight.Tip" DefaultValue="Align right." />
-        <bt:String id="PT.M.Format.AlignJustify.Tip" DefaultValue="Justified alignment." />
-        <bt:String id="PT.M.Format.Single.Tip" DefaultValue="Single line spacing." />
-        <bt:String id="PT.M.Format.OneFive.Tip" DefaultValue="One-and-half line spacing." />
-        <bt:String id="PT.M.Format.Double.Tip" DefaultValue="Double line spacing." />
-        <bt:String id="PT.M.Format.Upper.Tip" DefaultValue="Convert to upper case." />
-        <bt:String id="PT.M.Format.Lower.Tip" DefaultValue="Convert to lower case." />
-        <bt:String id="PT.M.Format.Title.Tip" DefaultValue="Convert to title case." />
-        <bt:String id="PT.M.Format.Sentence.Tip" DefaultValue="Convert to sentence case." />
-        <bt:String id="PT.M.Format.Toggle.Tip" DefaultValue="Toggle character case." />
-        <bt:String id="PT.M.Format.Collapse.Tip" DefaultValue="Collapse repeated spaces." />
-        <bt:String id="PT.M.Format.Ordinals.Tip" DefaultValue="Superscript ordinal suffixes." />
-        <bt:String id="PT.M.Format.Widow.Tip" DefaultValue="Prevent widowed lines." />
-        <bt:String id="PT.M.Captions.Tip" DefaultValue="Captions commands." />
-        <bt:String id="PT.M.Captions.Table.Tip" DefaultValue="Insert a table caption." />
-        <bt:String id="PT.M.Captions.Figure.Tip" DefaultValue="Insert a figure caption." />
-        <bt:String id="PT.M.Captions.Equation.Tip" DefaultValue="Insert an equation caption." />
-        <bt:String id="PT.M.Captions.Refresh.Tip" DefaultValue="Update caption numbering." />
-        <bt:String id="PT.M.Select.Tip" DefaultValue="Select commands." />
-        <bt:String id="PT.M.Select.Tables.Tip" DefaultValue="Select the first table." />
-        <bt:String id="PT.M.Select.EmptyParas.Tip" DefaultValue="Select the first empty paragraph." />
-        <bt:String id="PT.M.Select.Headings.Tip" DefaultValue="Select the first heading." />
-        <bt:String id="PT.M.Select.ShortParas.Tip" DefaultValue="Select the first short paragraph." />
-        <bt:String id="PT.M.Select.Pictures.Tip" DefaultValue="Select the first picture." />
-        <bt:String id="PT.M.Profiles.Tip" DefaultValue="Profiles commands." />
-        <bt:String id="PT.M.Profiles.CourtBody.Tip" DefaultValue="Apply the Court Body profile." />
-        <bt:String id="PT.M.Profiles.CourtHeading.Tip" DefaultValue="Apply the Court Heading profile." />
-        <bt:String id="PT.M.Profiles.SingleReset.Tip" DefaultValue="Apply single-space reset." />
+        <bt:String id="GetStarted.Description" DefaultValue="Formatting, cleanup, numbering, profiles and footnote detection for Word." />
+        <bt:String id="PT.B.Breaks.AllBreaks.Tip" DefaultValue="Remove all breaks." />
+        <bt:String id="PT.B.Breaks.ColumnBreaks.Tip" DefaultValue="Remove all column breaks." />
+        <bt:String id="PT.B.Breaks.PageBreaks.Tip" DefaultValue="Remove all page breaks." />
+        <bt:String id="PT.B.Breaks.SectionBreaks.Tip" DefaultValue="Remove section breaks (sections merge)." />
+        <bt:String id="PT.B.Cleanup.DropCaps.Tip" DefaultValue="Remove drop caps." />
+        <bt:String id="PT.B.Cleanup.EmptyLines.Tip" DefaultValue="Collapse repeated manual line breaks." />
+        <bt:String id="PT.B.Cleanup.EmptyParas.Tip" DefaultValue="Remove empty paragraphs." />
+        <bt:String id="PT.B.Cleanup.ExtraSpacing.Tip" DefaultValue="Clamp spacing above 12pt to 6pt." />
+        <bt:String id="PT.B.Cleanup.Frames.Tip" DefaultValue="Remove frames." />
+        <bt:String id="PT.B.Cleanup.Hidden.Tip" DefaultValue="Delete hidden text." />
+        <bt:String id="PT.B.Cleanup.HorizLines.Tip" DefaultValue="Remove horizontal line paragraphs." />
+        <bt:String id="PT.B.Cleanup.TabsSpaces.Tip" DefaultValue="Convert tabs to spaces." />
+        <bt:String id="PT.B.Format.Collapse.Tip" DefaultValue="Collapse repeated spaces." />
+        <bt:String id="PT.B.Format.FieldText.Tip" DefaultValue="Field codes to plain text." />
+        <bt:String id="PT.B.Format.LfToPm.Tip" DefaultValue="Manual line breaks to paragraph marks." />
+        <bt:String id="PT.B.Format.ListText.Tip" DefaultValue="Detach lists to plain text." />
+        <bt:String id="PT.B.Format.Ordinals.Tip" DefaultValue="Superscript ordinal suffixes (1st, 2nd)." />
+        <bt:String id="PT.B.Format.PmToLf.Tip" DefaultValue="Paragraph marks to manual line breaks." />
+        <bt:String id="PT.B.Profiles.CourtBody.Tip" DefaultValue="Apply the Court Body profile." />
+        <bt:String id="PT.B.Profiles.CourtHeading.Tip" DefaultValue="Apply the Court Heading profile." />
+        <bt:String id="PT.B.Profiles.SingleReset.Tip" DefaultValue="Apply single-space reset." />
+        <bt:String id="PT.B.References.Bookmarks.Tip" DefaultValue="Delete all bookmarks." />
+        <bt:String id="PT.B.References.Comments.Tip" DefaultValue="Delete all comments." />
+        <bt:String id="PT.B.References.Hyperlinks.Tip" DefaultValue="Remove hyperlinks, keep text." />
+        <bt:String id="PT.B.Select.EmptyParas.Tip" DefaultValue="Select the first empty paragraph." />
+        <bt:String id="PT.B.Select.Headings.Tip" DefaultValue="Select the first heading." />
+        <bt:String id="PT.B.Select.Pictures.Tip" DefaultValue="Select the first picture." />
+        <bt:String id="PT.B.Select.ShortParas.Tip" DefaultValue="Select the first short paragraph." />
+        <bt:String id="PT.B.Select.Tables.Tip" DefaultValue="Select the first table." />
+        <bt:String id="PT.B.Tables.Controls.Tip" DefaultValue="Remove content controls, keep text." />
+        <bt:String id="PT.B.Tables.EmptyCols.Tip" DefaultValue="Delete wholly-empty table columns." />
+        <bt:String id="PT.B.Tables.EmptyRows.Tip" DefaultValue="Delete wholly-empty table rows." />
+        <bt:String id="PT.B.Tables.Pictures.Tip" DefaultValue="Delete all pictures." />
+        <bt:String id="PT.B.Tables.RemoveTables.Tip" DefaultValue="Delete all tables and content." />
+        <bt:String id="PT.B.Tables.Resize100.Tip" DefaultValue="Reset all pictures to 100%." />
+        <bt:String id="PT.B.Tables.Resize150.Tip" DefaultValue="Scale all pictures to 150%." />
+        <bt:String id="PT.B.Tables.Resize50.Tip" DefaultValue="Scale all pictures to 50%." />
+        <bt:String id="PT.B.Tables.TextBoxes.Tip" DefaultValue="Delete text boxes and content." />
+        <bt:String id="PT.Review.Tip" DefaultValue="Review and convert pasted footnotes." />
+        <bt:String id="PT.Tools.Tip" DefaultValue="Open numbering, profiles and audit tools." />
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

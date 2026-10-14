@@ -61,6 +61,7 @@ npm run build    # production build → dist/
 - [x] Phases 41–43 (Appendix J) — manual block-area override, citation systems, ordinal superscripting
 - [x] Phase 44 + evidence model — ribbon tab with quick actions; tiered evidence scoring with contradictions
 - [x] Appendix K — ribbon-first UX: KuTools-like menus, footnote/tools dialogs, slim task-pane fallback
+- [x] Appendix L — native-duplicate purge; flat-button ribbon; confirm dialogs; dialogs-only UI
 - [ ] Phases 10–30 — feature modules, panels, testing, packaging
 
 Note: `tsconfig.json` intentionally has no `noEmit` (webpack `ts-loader` needs emit;

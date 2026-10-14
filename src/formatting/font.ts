@@ -1,8 +1,6 @@
 /**
- * font.ts — Phase 10: font formatting operations.
- * Integration notes §1: Office.js reports mixed-selection properties as `null`
- * (COM's 9999999 does not apply). Toggles set `true` on null, else invert.
- * There is no toggle constant — always read before inverting.
+ * font.ts — font formatting engine (used by profiles; direct UI removed as
+ * native-duplicate — Word's own Font controls cover these one-to-one).
  */
 import { FontOptions, UnderlineStyle } from "../shared/types";
 import { getSelectionOrThrow, safeWordRun } from "../shared/wordUtils";
@@ -48,97 +46,6 @@ export async function applyFont(options: FontOptions): Promise<{ error?: string 
     if (options.smallCaps !== undefined) font.smallCaps = options.smallCaps;
     if (options.spacing !== undefined) font.spacing = options.spacing;
     if (options.hidden !== undefined) font.hidden = options.hidden;
-    await context.sync();
-  });
-}
-
-export async function increaseFontSize(by: number = 1): Promise<{ error?: string }> {
-  return safeWordRun(async (context) => {
-    const selection = await getSelectionOrThrow(context);
-    selection.load("font/size");
-    await context.sync();
-    const base = selection.font.size ?? 12;
-    selection.font.size = Math.max(1, base + by);
-    await context.sync();
-  });
-}
-
-export async function decreaseFontSize(by: number = 1): Promise<{ error?: string }> {
-  return safeWordRun(async (context) => {
-    const selection = await getSelectionOrThrow(context);
-    selection.load("font/size");
-    await context.sync();
-    const base = selection.font.size ?? 12;
-    selection.font.size = Math.max(1, base - by);
-    await context.sync();
-  });
-}
-
-export async function clearCharacterFormatting(): Promise<{ error?: string }> {
-  return safeWordRun(async (context) => {
-    const selection = await getSelectionOrThrow(context);
-    const font = selection.font;
-    font.bold = false;
-    font.italic = false;
-    font.underline = Word.UnderlineType.none;
-    font.strikeThrough = false;
-    font.superscript = false;
-    font.subscript = false;
-    font.allCaps = false;
-    font.smallCaps = false;
-    font.color = "auto";
-    font.highlightColor = "none";
-    font.spacing = 0;
-    font.hidden = false;
-    await context.sync();
-  });
-}
-
-export async function toggleBold(): Promise<{ error?: string }> {
-  return safeWordRun(async (context) => {
-    const selection = await getSelectionOrThrow(context);
-    selection.load("font/bold");
-    await context.sync();
-    selection.font.bold = selection.font.bold === null ? true : !selection.font.bold;
-    await context.sync();
-  });
-}
-
-export async function toggleItalic(): Promise<{ error?: string }> {
-  return safeWordRun(async (context) => {
-    const selection = await getSelectionOrThrow(context);
-    selection.load("font/italic");
-    await context.sync();
-    selection.font.italic = selection.font.italic === null ? true : !selection.font.italic;
-    await context.sync();
-  });
-}
-
-export async function toggleStrikethrough(): Promise<{ error?: string }> {
-  return safeWordRun(async (context) => {
-    const selection = await getSelectionOrThrow(context);
-    selection.load("font/strikeThrough");
-    await context.sync();
-    selection.font.strikeThrough =
-      selection.font.strikeThrough === null ? true : !selection.font.strikeThrough;
-    await context.sync();
-  });
-}
-
-export async function setSuperscript(): Promise<{ error?: string }> {
-  return safeWordRun(async (context) => {
-    const selection = await getSelectionOrThrow(context);
-    selection.font.superscript = true;
-    selection.font.subscript = false;
-    await context.sync();
-  });
-}
-
-export async function setSubscript(): Promise<{ error?: string }> {
-  return safeWordRun(async (context) => {
-    const selection = await getSelectionOrThrow(context);
-    selection.font.subscript = true;
-    selection.font.superscript = false;
     await context.sync();
   });
 }

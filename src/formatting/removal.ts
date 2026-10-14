@@ -309,6 +309,62 @@ export async function removeHyperlinks(
   );
 }
 
+export async function removeHorizontalLines(): Promise<{ data?: number; error?: string }> {
+  return safeWordRun(async (context) => {
+    const paragraphs = context.document.body.paragraphs;
+    paragraphs.load("text");
+    await context.sync();
+    const candidates = paragraphs.items.slice().reverse();
+    const ooxmlResults = candidates.map((para) => para.getOoxml());
+    const tableChecks = candidates.map((para) => {
+      const t = para.parentTableOrNullObject;
+      context.load(t);
+      return t;
+    });
+    await context.sync();
+    let deleted = 0;
+    for (let i = 0; i < candidates.length; i++) {
+      // Audit lesson: cell borders are normal table formatting — never delete
+      // in-table paragraphs for having borders.
+      if (!tableChecks[i].isNullObject) {
+        continue;
+      }
+      const para = candidates[i];
+      if (/^[-_=]{3,}$/.test(para.text.trim())) {
+        para.delete();
+        deleted++;
+      } else if (/<w:pBdr[\s\S]*?<w:bottom[\s>/]/.test(ooxmlResults[i].value)) {
+        para.delete();
+        deleted++;
+      }
+    }
+    await context.sync();
+    return deleted;
+  });
+}
+
+export async function removeExtraDocumentSpacing(): Promise<{
+  data?: number;
+  error?: string;
+}> {
+  return safeWordRun(async (context) => {
+    const paragraphs = context.document.body.paragraphs;
+    paragraphs.load("spaceBefore, spaceAfter");
+    await context.sync();
+    let adjusted = 0;
+    for (const para of paragraphs.items) {
+      if (para.spaceBefore > 12 || para.spaceAfter > 12) {
+        para.spaceBefore = 6;
+        para.spaceAfter = 6;
+        adjusted++;
+      }
+    }
+    await context.sync();
+    return adjusted;
+  });
+}
+
+
 export async function tabToSpace(
   applyTo: RemovalScope = "document"
 ): Promise<{ data?: number; error?: string }> {
