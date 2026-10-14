@@ -82,6 +82,7 @@ import {
   lineBreaksToParagraphMarks,
   paragraphMarksToLineBreaks,
 } from "../../formatting/convert";
+import { insertCaption, refreshCaptions } from "../../formatting/captions";
 import { clearFormatting } from "../../formatting/clear";
 import { CaseTransform, LineSpacingRule } from "../../shared/types";
 
@@ -149,6 +150,8 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
   const [selectedProfile, setSelectedProfile] = useState<string>(BUILTIN_PROFILES[0].id);
   const [profileScope, setProfileScope] = useState<"selection" | "document">("selection");
   const [importText, setImportText] = useState("");
+  const [captionKind, setCaptionKind] = useState<"table" | "figure" | "equation">("table");
+  const [captionLabel, setCaptionLabel] = useState("");
   const [numberScope, setNumberScope] = useState<"selection" | "document">("selection");
   const [numberItems, setNumberItems] = useState<NumberedParagraph[]>([]);
   const [numberIssues, setNumberIssues] = useState<NumberingIssue[]>([]);
@@ -429,6 +432,32 @@ export function FormattingPanel({ setError }: FormattingPanelProps): React.JSX.E
             </Button>
             <Button onClick={() => void run(clearFormatting("all"))}>
               Clear All Formatting
+            </Button>
+            <Dropdown
+              value={captionKind}
+              selectedOptions={[captionKind]}
+              aria-label="Caption kind"
+              onOptionSelect={(_, data) => {
+                if (data.optionValue) {
+                  setCaptionKind(data.optionValue as "table" | "figure" | "equation");
+                }
+              }}
+            >
+              <Option value="table">Table</Option>
+              <Option value="figure">Figure</Option>
+              <Option value="equation">Equation</Option>
+            </Dropdown>
+            <input
+              aria-label="Caption label (optional)"
+              placeholder="Label (optional)"
+              value={captionLabel}
+              onChange={(e) => setCaptionLabel(e.target.value)}
+            />
+            <Button onClick={() => void run(insertCaption(captionKind, captionLabel))}>
+              Insert Caption
+            </Button>
+            <Button onClick={() => void runCount(refreshCaptions(), "caption(s) refreshed")}>
+              Refresh Captions
             </Button>
           </AccordionPanel>
         </AccordionItem>
