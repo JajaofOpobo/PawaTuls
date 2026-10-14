@@ -62,6 +62,16 @@ export interface BorderOptions {
   type?: "single" | "double" | "dotted" | "dashed" | "none";
 }
 
+export interface FormattingProfile {
+  schemaVersion: 1;
+  id: string;            // stable, unique, e.g. "court-body-1"
+  name: string;          // display name
+  description?: string;
+  style?: string;        // named style applied first (must exist)
+  font?: FontOptions;
+  paragraph?: ParagraphOptions;
+}
+
 // ─── LEGAL WORKFLOWS ─────────────────────────────────────────────────────────
 
 export type NumberingScheme =
