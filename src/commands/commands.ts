@@ -12,6 +12,7 @@ import { removeAllBreaks, removeBookmarks, removeColumnBreaks, removeComments, r
 import { selectEmptyParagraphs, selectHeadings, selectPictures, selectShortParagraphs, selectTables } from "../formatting/select";
 import { resizeImages } from "../formatting/tables";
 import { collapseMultipleSpaces, superscriptOrdinals } from "../formatting/text";
+import { convertEndnoteToText, removeEndnotes, removeFootnotes } from "../footnotes/notes";
 
 function formatCollapseBtn(event: Office.AddinCommands.Event): void {
   void complete(event, collapseMultipleSpaces());
@@ -259,6 +260,22 @@ function openFootnoteDialog(event: Office.AddinCommands.Event): void {
 
 Office.actions.associate("openToolsDialog", openToolsDialog);
 Office.actions.associate("openFootnoteDialog", openFootnoteDialog);
+
+function footnotesRemoveBtn(event: Office.AddinCommands.Event): void {
+  void confirmAndRun(event, "Remove ALL genuine footnotes in the document?", () => removeFootnotes());
+}
+
+function footnotesEndnotesBtn(event: Office.AddinCommands.Event): void {
+  void confirmAndRun(event, "Remove ALL genuine endnotes in the document?", () => removeEndnotes());
+}
+
+function footnotesEndToTextBtn(event: Office.AddinCommands.Event): void {
+  void confirmAndRun(event, "Convert ALL endnotes to plain text at the document end?", () => convertEndnoteToText());
+}
+
+Office.actions.associate("footnotesRemoveBtn", footnotesRemoveBtn);
+Office.actions.associate("footnotesEndnotesBtn", footnotesEndnotesBtn);
+Office.actions.associate("footnotesEndToTextBtn", footnotesEndToTextBtn);
 
 async function complete(event: Office.AddinCommands.Event, op: Promise<unknown>): Promise<void> {
   try {
